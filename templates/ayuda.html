@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}Ayuda - Preguntas Frecuentes{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="fw-700" style="color: #0b2f44; font-size: 2.5rem;">Preguntas Frecuentes</h1>
+    <p class="lead" style="color: #666;">Encuentra respuestas a las preguntas más comunes sobre nuestros servicios</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="accordion" id="faqAccordion">
+        
+        <!-- Pregunta 1 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="font-weight: 600; color: #0b2f44;">
+              ¿Qué zonas cubren sus servicios?
+            </button>
+          </h2>
+          <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Cubrimos toda la zona de Querétaro y sus alrededores para fletes locales. También ofrecemos servicios de fletes foráneos a nivel nacional. Contáctanos para confirmar disponibilidad en tu zona específica.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" style="font-weight: 600; color: #0b2f44;">
+              ¿Cómo puedo obtener una cotización?
+            </button>
+          </h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Puedes obtener una cotización de dos formas:
+              <ul class="mt-2">
+                <li>Usando nuestra calculadora automática en la sección de <a href="{{ url_for('fletes') }}">FLETES</a>, donde ingresarás origen, destino y los muebles a transportar.</li>
+                <li>Contactándonos directamente por WhatsApp al <a href="https://wa.me/5214424597543" target="_blank">442 459 7543</a> o llamando al mismo número.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" style="font-weight: 600; color: #0b2f44;">
+              ¿Qué incluye el servicio de cargadores?
+            </button>
+          </h2>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Cada cargador adicional (además del chofer) tiene un costo de $250 pesos. Los cargadores se encargan de subir y bajar tus muebles de forma segura. El primer cargador es el chofer de la unidad quien también ayuda con la carga.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 4 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="font-weight: 600; color: #0b2f44;">
+              ¿Cómo se calcula el precio del servicio?
+            </button>
+          </h2>
+          <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              El precio se calcula según:
+              <ul class="mt-2">
+                <li><strong>Distancia:</strong> $25 por kilómetro recorrido</li>
+                <li><strong>Servicio base:</strong> $300 pesos</li>
+                <li><strong>Muebles adicionales:</strong> Si transportas más de un mueble, hay cargos adicionales (estufa $50, lavadora $50, sala $150, comedor $200, cama $200)</li>
+                <li><strong>Cargadores extras:</strong> $250 por cada cargador adicional al chofer</li>
+              </ul>
+              El total se redondea a múltiplos de $50 pesos.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 5 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" style="font-weight: 600; color: #0b2f44;">
+              ¿Mis muebles están asegurados durante el transporte?
+            </button>
+          </h2>
+          <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Sí, contamos con personal capacitado para el manejo cuidadoso de tus pertenencias. En caso de requerir un seguro adicional, contáctanos para brindarte opciones específicas para artículos de alto valor.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 6 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6" style="font-weight: 600; color: #0b2f44;">
+              ¿Con cuánta anticipación debo agendar el servicio?
+            </button>
+          </h2>
+          <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Recomendamos agendar con al menos 24-48 horas de anticipación para garantizar disponibilidad. Sin embargo, también atendemos servicios urgentes según disponibilidad. Contáctanos para verificar.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 7 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7" style="font-weight: 600; color: #0b2f44;">
+              ¿Qué tipos de vehículos utilizan?
+            </button>
+          </h2>
+          <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Contamos con diferentes unidades según el tamaño de tu mudanza o flete: desde camionetas pickup para fletes pequeños hasta camiones de 3.5 toneladas para mudanzas completas.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 8 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8" style="font-weight: 600; color: #0b2f44;">
+              ¿Puedo cancelar o reprogramar mi servicio?
+            </button>
+          </h2>
+          <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Sí, puedes cancelar o reprogramar tu servicio. Te pedimos avisar con al menos 12 horas de anticipación para evitar cargos. Contáctanos por WhatsApp o teléfono para cualquier cambio.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pregunta 9 -->
+        <div class="accordion-item mb-3" style="border: 1px solid #ddd; border-radius: 8px;">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9" style="font-weight: 600; color: #0b2f44;">
+              ¿Qué métodos de pago aceptan?
+            </button>
+          </h2>
+          <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body" style="color: #666;">
+              Aceptamos efectivo, transferencia bancaria y pago con tarjeta. El pago se realiza al finalizar el servicio.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de contacto -->
+  <div class="text-center mt-5 p-4" style="background: rgba(217,119,6,0.1); border-radius: 12px; border-left: 4px solid var(--accent-2);">
+    <h4 class="fw-600 mb-2" style="color: #0b2f44;">¿No encontraste tu respuesta?</h4>
+    <p style="color: #666; margin-bottom: 20px;">Contáctanos directamente y con gusto te ayudaremos</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="https://wa.me/5214424597543" target="_blank" class="btn" style="background: var(--accent-2); color: white; font-weight: 600;">
+        📱 WhatsApp
+      </a>
+      <a href="tel:4424597543" class="btn" style="background: #0b2f44; color: white; font-weight: 600;">
+        📞 Llamar
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

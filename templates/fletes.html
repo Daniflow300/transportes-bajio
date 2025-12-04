@@ -1,0 +1,1138 @@
+{% extends "base.html" %}
+
+{% block title %}Fletes - Transportes del Bajío{% endblock %}
+
+{% block content %}
+<!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <style>
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+    </style><div style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 60px 0; margin: -32px -15px 40px -15px; text-align: center;">
+  <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">Fletes</h1>
+  <p style="font-size: 1.2rem; color: var(--accent-2); font-weight: 500;">Transporte seguro y eficiente de tus mercancías</p>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar izquierdo - Servicios Realizados -->
+    <div class="col-lg-2 col-md-3">
+      <div class="card shadow-sm border-0" style="position: sticky; top: 20px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 15px; cursor: pointer;" onclick="toggleGallery()">
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-700">📸 Servicios Realizados</h6>
+            <span id="toggleIcon">▼</span>
+          </div>
+        </div>
+        <div class="card-body p-2" id="galleryContent" style="display: none;">
+          <div class="row g-2">
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete2.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete2.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete3.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete3.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete4.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete4.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete5.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete5.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda1.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda1.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda2.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda2.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda3.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda3.jpeg') }}')">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="col-lg-10 col-md-9">
+<div class="row">
+  <div class="col-lg-12">
+    <!-- Descripción General -->
+    <section style="margin-bottom: 50px;">
+      <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+        <p style="font-size: 1.05rem; line-height: 1.8; color: #333; margin-bottom: 15px;">
+          Un flete es el servicio de transporte de mercancías, objetos o mobiliario de un lugar a otro. En <strong>Transportes del Bajío</strong> realizamos traslados seguros y eficientes dentro de Querétaro y rutas foráneas, adaptándonos a las necesidades de cada cliente.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8; color: #333; margin-bottom: 0;">
+          Contamos con unidades adecuadas y personal capacitado para asegurar que tus artículos lleguen a su destino en tiempo y en perfectas condiciones.
+        </p>
+      </div>
+    </section>
+
+    <!-- Información adicional -->
+    <section style="margin-bottom: 50px;">
+      <p style="font-size: 1.1rem; line-height: 1.9; color: #0b2f44; font-weight: 600; text-align: center;">
+        A continuación, selecciona los muebles y el tipo de servicio que deseas para brindarte una cotización precisa.
+      </p>
+    </section>
+
+    <!-- Cotizador de Fletes -->
+    <section style="background: linear-gradient(135deg, rgba(13, 47, 68, 0.05) 0%, rgba(7, 39, 52, 0.05) 100%); padding: 40px; border-radius: 12px; border: 2px solid var(--accent-2);">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 30px; text-align: center;">Solicita tu Cotización</h2>
+      
+      <form id="cotizacion-form" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Muebles -->
+        <div>
+          <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;">
+            Selecciona los muebles a trasladar:
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="sofá" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Sofá</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="cama" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Cama</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="refrigerador" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Refrigerador</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="estufa" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Estufa</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="comedor" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Comedor</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="escritorio" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Escritorio</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="closet" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Closet</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" name="mueble" value="otros" id="otros-checkbox-form" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Otros</span>
+            </label>
+          </div>
+          
+          <!-- Opción de subir foto para "Otros" en formulario de cotización -->
+          <div id="otros-foto-upload-form" style="display: none; margin-top: 15px; padding: 15px; background: rgba(217,119,6,0.08); border-radius: 8px; border-left: 3px solid var(--accent-2);">
+            <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+              📷 Sube una foto del mueble:
+            </label>
+            <input type="file" id="otros-foto-form" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; width: 100%; background: white;">
+            <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 5px;">
+              Esto nos ayudará a hacer una cotización más precisa
+            </small>
+            <div id="foto-preview-form" style="margin-top: 10px; display: none;">
+              <img id="foto-preview-img-form" src="" style="max-width: 100%; max-height: 150px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo de servicio -->
+        <div>
+          <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;">
+            Tipo de servicio:
+          </label>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="radio" name="servicio" value="local" style="width: 18px; height: 18px; cursor: pointer;" checked>
+              <span style="color: #333; font-size: 0.95rem;">Flete Local (Dentro de Querétaro)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="radio" name="servicio" value="foraneo" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Flete Foráneo (Fuera de Querétaro)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Preferencia de contacto -->
+        <div>
+          <div style="padding: 15px; background: rgba(217,119,6,0.08); border-radius: 8px; border-left: 3px solid var(--accent-2);">
+            <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;">
+              ¿Cómo prefieres que te contactemos?
+            </label>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="radio" name="preferencia_contacto" value="whatsapp" style="width: 18px; height: 18px; cursor: pointer;" checked>
+                <span style="color: #333; font-size: 0.95rem;">📱 Solo WhatsApp</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="radio" name="preferencia_contacto" value="llamada" style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="color: #333; font-size: 0.95rem;">📞 Sí, puedes llamarme</span>
+              </label>
+            </div>
+            <small style="color: #666; font-size: 0.85rem; display: block; margin-top: 8px;">
+              Nos ayudará a brindarte una mejor atención personalizada
+            </small>
+          </div>
+        </div>
+
+        <!-- Comentarios -->
+        <div>
+          <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;">
+            Comentarios adicionales:
+          </label>
+          <textarea name="comentarios" placeholder="Cuéntanos más detalles sobre tu flete..." style="padding: 10px 14px; border: 2px solid var(--accent-2); border-radius: 8px; font-size: 0.95rem; width: 100%; min-height: 100px; resize: vertical;"></textarea>
+        </div>
+
+        <!-- Botón de envío -->
+        <button type="submit" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; border: none; padding: 14px 40px; font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+          Solicitar Cotización
+        </button>
+      </form>
+    </section>
+
+    <!-- Mapa de Ubicación -->
+    <section style="margin-top: 50px; margin-bottom: 40px;">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; text-align: center;">Calcula tu Cotización</h2>
+      
+      <!-- Selección de Muebles -->
+      <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 20px;">
+        <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 600; margin-bottom: 20px;">Selecciona los muebles a transportar:</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+          
+          <!-- Refrigerador -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+              <input type="checkbox" id="mueble-refri" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Refrigerador</span>
+            </label>
+            <div id="refri-options" style="margin-left: 26px; display: none;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin-bottom: 5px;">
+                <input type="radio" name="refri-tipo" value="normal" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Refri normal</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="radio" name="refri-tipo" value="duplex" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Refri duplex</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Lavadora -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="mueble-lavadora" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Lavadora</span>
+            </label>
+          </div>
+          
+          <!-- Cama -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+              <input type="checkbox" id="mueble-cama" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Cama</span>
+            </label>
+            <div id="cama-options" style="margin-left: 26px; display: none;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin-bottom: 5px;">
+                <input type="checkbox" name="cama-parte" value="base" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Base</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" name="cama-parte" value="colchon" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Colchón</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Estufa -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="mueble-estufa" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Estufa</span>
+            </label>
+          </div>
+          
+          <!-- Escritorio -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="mueble-escritorio" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Escritorio</span>
+            </label>
+          </div>
+          
+          <!-- Sala -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+              <input type="checkbox" id="mueble-sala" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Sala</span>
+            </label>
+            <div id="sala-options" style="margin-left: 26px; display: none;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin-bottom: 5px;">
+                <input type="radio" name="sala-tipo" value="1pieza" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Sala de 1 pieza</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; margin-bottom: 5px;">
+                <input type="radio" name="sala-tipo" value="2piezas" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Sala de 2 piezas</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="radio" name="sala-tipo" value="3piezas" style="width: 16px; height: 16px; cursor: pointer;">
+                <span style="color: #666; font-size: 0.9rem;">Sala de 3 piezas</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Comedor -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="mueble-comedor" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Comedor</span>
+            </label>
+          </div>
+          
+          <!-- Otros -->
+          <div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="mueble-otros" class="mueble-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #0b2f44; font-weight: 600;">Otros</span>
+            </label>
+            
+            <!-- Opción de subir foto para "Otros" -->
+            <div id="otros-foto-upload" style="display: none; margin-top: 12px; padding: 12px; background: rgba(217,119,6,0.08); border-radius: 8px; border-left: 3px solid var(--accent-2);">
+              <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+                📷 Sube una foto del mueble:
+              </label>
+              <input type="file" id="otros-foto" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; width: 100%; background: white;">
+              <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 5px;">
+                Esto nos ayudará a hacer una cotización más precisa
+              </small>
+              <div id="foto-preview" style="margin-top: 10px; display: none;">
+                <img id="foto-preview-img" src="" style="max-width: 100%; max-height: 150px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- Formulario de Direcciones -->
+      <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 20px;">
+        <div class="row">
+          <div class="col-md-6" style="margin-bottom: 15px;">
+            <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+              📍 Origen
+            </label>
+            <div style="position: relative;">
+              <input type="text" id="origin-input" autocomplete="off" style="padding: 10px 14px; border: 2px solid var(--accent-2); border-radius: 8px; font-size: 0.95rem; width: 100%;" placeholder="Detectando ubicación...">
+              <div id="origin-suggestions" class="suggestions-list"></div>
+            </div>
+            <small style="color: #666; font-size: 0.8rem;">Se detectará automáticamente o puedes modificar</small>
+          </div>
+          <div class="col-md-6" style="margin-bottom: 15px;">
+            <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+              🎯 Destino
+            </label>
+            <div style="position: relative;">
+              <input type="text" id="destination-input" autocomplete="off" style="padding: 10px 14px; border: 2px solid var(--accent-2); border-radius: 8px; font-size: 0.95rem; width: 100%;" placeholder="Escribe la dirección de destino...">
+              <div id="destination-suggestions" class="suggestions-list"></div>
+            </div>
+            <small style="color: #666; font-size: 0.8rem;">Ejemplo: Av. Universidad, Querétaro</small>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+          <button id="calculate-route-btn" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; border: none; padding: 12px 40px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer;">
+            Calcular Ruta
+          </button>
+        </div>
+        
+        <!-- Información de la Ruta -->
+        <div id="route-info" style="margin-top: 20px; padding: 15px; background: rgba(217,119,6,0.08); border-radius: 8px; display: none;">
+          <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;">
+            <div style="text-align: center;">
+              <div style="color: #0b2f44; font-weight: 700; font-size: 1.5rem;" id="distance-text">-</div>
+              <div style="color: #666; font-size: 0.85rem;">Distancia</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="color: #0b2f44; font-weight: 700; font-size: 1.5rem;" id="duration-text">-</div>
+              <div style="color: #666; font-size: 0.85rem;">Tiempo estimado</div>
+            </div>
+          </div>
+          
+          <!-- Cotización Total -->
+          <div id="cotizacion-box" style="margin-top: 20px; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--accent-2); display: none;">
+            <h4 style="color: #0b2f44; font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; text-align: center;">💰 Cotización Estimada</h4>
+            <div style="background: rgba(217,119,6,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #666;">Distancia:</span>
+                <span style="color: #0b2f44; font-weight: 600;" id="cotiz-distance">0 km</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #666;">Servicio base:</span>
+                <span style="color: #0b2f44; font-weight: 600;">$300</span>
+              </div>
+              
+              <!-- Opción de Cargadores -->
+              <div style="margin: 15px 0; padding: 12px; background: white; border-radius: 6px; border: 1px solid #ddd;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 8px;">
+                  <input type="checkbox" id="cargadores-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                  <span style="color: #0b2f44; font-weight: 600;">Agregar cargadores ($250 c/u)</span>
+                </label>
+                
+                <!-- Información sobre cargadores -->
+                <div style="background: rgba(217,119,6,0.1); padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid var(--accent-2);">
+                  <p style="margin: 0; color: #666; font-size: 0.85rem; line-height: 1.4;">
+                    ℹ️ A cada cargador se le remunerará $250 pesos por su trabajo y tiempo, por eso el precio.
+                  </p>
+                </div>
+                
+                <div id="cargadores-selector" style="display: none; margin-top: 10px;">
+                  <label style="display: block; color: #666; font-size: 0.9rem; margin-bottom: 5px;">¿Cuántos cargadores necesitas?</label>
+                  <select id="cargadores-cantidad" style="width: 100%; padding: 8px; border: 2px solid var(--accent-2); border-radius: 6px; font-size: 0.95rem;">
+                    <option value="1">1 cargador (chofer de la unidad y cargador)</option>
+                    <option value="2">2 cargadores</option>
+                    <option value="3">3 cargadores</option>
+                    <option value="4">4 cargadores</option>
+                    <option value="5">5 cargadores</option>
+                  </select>
+                </div>
+              </div>
+              <div id="cargadores-costo" style="display: none; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #666;">Cargadores (<span id="cargadores-num">1</span>):</span>
+                <span style="color: #0b2f44; font-weight: 600;" id="cargadores-total">$300</span>
+              </div>
+              
+              <div id="muebles-costo" style="display: none; justify-content: space-between; margin-bottom: 10px;">
+                <span style="color: #666;">Muebles adicionales:</span>
+                <span style="color: #0b2f44; font-weight: 600;" id="muebles-total">$0</span>
+              </div>
+              
+              <hr style="border-color: rgba(11,47,68,0.2); margin: 15px 0;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #0b2f44; font-weight: 700; font-size: 1.2rem;">TOTAL:</span>
+                <span style="color: var(--accent-2); font-weight: 700; font-size: 1.4rem;" id="cotiz-total">$0</span>
+              </div>
+            </div>
+            <p style="text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 15px;">
+              * Cotización estimada. El precio final puede variar según los muebles y servicios adicionales.
+            </p>
+            
+            <!-- Botón Solicitar Servicio -->
+            <div style="text-align: center;">
+              <button id="solicitar-servicio-btn" onclick="solicitarServicio()" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); color: white; border: none; padding: 14px 40px; font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(37,211,102,0.3); transition: all 0.3s ease;">
+                <img src="{{ url_for('static', filename='img/whatsapp_icon.svg') }}" alt="WhatsApp" class="wh-icon" style="width: 24px; height: 24px;">
+                Solicitar Servicio
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mapa -->
+      <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.12); height: 500px;" id="map"></div>
+    </section>
+
+    <!-- CTA -->
+    <section style="text-align: center; padding: 40px; background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); border-radius: 12px; color: white; margin-top: 50px;">
+      <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 15px;">¿Prefieres contactarnos directamente?</h3>
+      <p style="font-size: 1.1rem; margin-bottom: 30px; opacity: 0.95;">Nuestro equipo está listo para ayudarte con tu flete.</p>
+      <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <a href="https://wa.me/5214424597543" target="_blank" style="background-color: var(--accent-2); color: white; border: none; padding: 12px 35px; font-size: 1rem; font-weight: 600; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <img src="{{ url_for('static', filename='img/whatsapp_icon.svg') }}" alt="WhatsApp" class="wh-icon">
+          WhatsApp
+        </a>
+        <a href="https://www.facebook.com/share/1CTghwJAoa/" target="_blank" style="background-color: #1877f2; color: white; border: none; padding: 12px 35px; font-size: 1rem; font-weight: 600; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.3rem;">f</span> Facebook
+        </a>
+        <a href="tel:4424597543" style="background-color: #25d366; color: white; border: none; padding: 12px 35px; font-size: 1rem; font-weight: 600; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.3rem;">📞</span> 4424597543
+        </a>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Listener para checkbox de "Otros" en el formulario de cotización
+  document.addEventListener('DOMContentLoaded', function() {
+    const otrosCheckboxForm = document.getElementById('otros-checkbox-form');
+    const otrosFotoUploadForm = document.getElementById('otros-foto-upload-form');
+    const otrosFotoInputForm = document.getElementById('otros-foto-form');
+    const fotoPreviewForm = document.getElementById('foto-preview-form');
+    const fotoPreviewImgForm = document.getElementById('foto-preview-img-form');
+    
+    if (otrosCheckboxForm) {
+      otrosCheckboxForm.addEventListener('change', function() {
+        if (this.checked) {
+          otrosFotoUploadForm.style.display = 'block';
+        } else {
+          otrosFotoUploadForm.style.display = 'none';
+          otrosFotoInputForm.value = '';
+          fotoPreviewForm.style.display = 'none';
+        }
+      });
+    }
+    
+    // Listener para mostrar preview de la foto en formulario
+    if (otrosFotoInputForm) {
+      otrosFotoInputForm.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            fotoPreviewImgForm.src = event.target.result;
+            fotoPreviewForm.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  });
+
+  document.getElementById('cotizacion-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const muebles = Array.from(document.querySelectorAll('input[name="mueble"]:checked'))
+      .map(el => el.value)
+      .join(', ');
+    
+    const servicio = document.querySelector('input[name="servicio"]:checked').value;
+    const comentarios = document.querySelector('textarea[name="comentarios"]').value || 'Sin comentarios adicionales';
+    const preferenciaContacto = document.querySelector('input[name="preferencia_contacto"]:checked').value;
+    const contactoTexto = preferenciaContacto === 'whatsapp' ? 'Solo WhatsApp' : 'Sí, puedes llamarme';
+    
+    if (!muebles) {
+      alert('Por favor selecciona al menos un mueble');
+      return;
+    }
+    
+    let mensaje = `Hola, solicito una cotización para flete:\n\nMuebles: ${muebles}\nServicio: ${servicio === 'local' ? 'Local (Querétaro)' : 'Foráneo'}\nPreferencia de contacto: ${contactoTexto}\nComentarios: ${comentarios}`;
+    
+    // Si se seleccionó "Otros" y hay foto, agregar nota
+    const otrosFoto = document.getElementById('otros-foto-form');
+    if (otrosFoto && otrosFoto.files.length > 0) {
+      mensaje += '\n\n📷 Foto del mueble "Otros" adjunta';
+    }
+    
+    const whatsappUrl = `https://wa.me/5214424597543?text=${encodeURIComponent(mensaje)}`;
+    window.open(whatsappUrl, '_blank');
+  });
+</script>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+  let map;
+  let routingControl;
+  let userLocation = null;
+  let userMarker = null;
+  let searchTimeout = null;
+
+  // Función para buscar sugerencias de lugares
+  function searchPlaces(query, suggestionsId) {
+    if (query.length < 3) {
+      document.getElementById(suggestionsId).style.display = 'none';
+      return;
+    }
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=mx&limit=5`)
+      .then(response => response.json())
+      .then(data => {
+        const suggestionsDiv = document.getElementById(suggestionsId);
+        suggestionsDiv.innerHTML = '';
+        
+        if (data.length > 0) {
+          data.forEach(place => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = place.display_name;
+            div.onclick = function() {
+              const inputId = suggestionsId.replace('-suggestions', '-input');
+              const input = document.getElementById(inputId);
+              input.value = place.display_name;
+              input.dataset.lat = place.lat;
+              input.dataset.lon = place.lon;
+              suggestionsDiv.style.display = 'none';
+            };
+            suggestionsDiv.appendChild(div);
+          });
+          suggestionsDiv.style.display = 'block';
+        } else {
+          suggestionsDiv.style.display = 'none';
+        }
+      })
+      .catch(error => {
+        console.error('Error buscando lugares:', error);
+      });
+  }
+
+  function initMap() {
+    // Inicializar el mapa centrado en Querétaro
+    map = L.map('map').setView([20.5888, -100.3899], 12);
+
+    // Agregar capa de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Agregar listeners para autocompletado con debounce
+    document.getElementById('origin-input').addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      // Limpiar las coordenadas guardadas cuando el usuario edita manualmente
+      delete e.target.dataset.lat;
+      delete e.target.dataset.lon;
+      searchTimeout = setTimeout(() => {
+        searchPlaces(e.target.value, 'origin-suggestions');
+      }, 300);
+    });
+
+    document.getElementById('destination-input').addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      // Limpiar las coordenadas guardadas cuando el usuario edita manualmente
+      delete e.target.dataset.lat;
+      delete e.target.dataset.lon;
+      searchTimeout = setTimeout(() => {
+        searchPlaces(e.target.value, 'destination-suggestions');
+      }, 300);
+    });
+
+    // Cerrar sugerencias al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#origin-input') && !e.target.closest('#origin-suggestions')) {
+        document.getElementById('origin-suggestions').style.display = 'none';
+      }
+      if (!e.target.closest('#destination-input') && !e.target.closest('#destination-suggestions')) {
+        document.getElementById('destination-suggestions').style.display = 'none';
+      }
+    });
+
+    // Obtener ubicación del usuario
+    getUserLocation();
+  }
+
+  function getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          const originInput = document.getElementById('origin-input');
+
+          // Obtener dirección usando Nominatim (geocodificación inversa gratuita)
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLocation.lat}&lon=${userLocation.lng}`)
+            .then(response => response.json())
+            .then(data => {
+              originInput.value = data.display_name;
+              originInput.dataset.lat = userLocation.lat;
+              originInput.dataset.lon = userLocation.lng;
+            })
+            .catch(error => {
+              originInput.value = `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`;
+              originInput.dataset.lat = userLocation.lat;
+              originInput.dataset.lon = userLocation.lng;
+            });
+
+          // Centrar mapa en ubicación del usuario
+          map.setView([userLocation.lat, userLocation.lng], 14);
+
+          // Agregar marcador de origen
+          userMarker = L.marker([userLocation.lat, userLocation.lng], {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          }).addTo(map);
+          
+          userMarker.bindPopup('Tu ubicación').openPopup();
+        },
+        (error) => {
+          console.error('Error obteniendo ubicación:', error);
+          document.getElementById('origin-input').value = 'No se pudo detectar tu ubicación';
+          alert('No se pudo obtener tu ubicación. Por favor, permite el acceso a tu ubicación o ingresa una dirección manualmente.');
+        }
+      );
+    } else {
+      document.getElementById('origin-input').value = 'Geolocalización no soportada';
+      alert('Tu navegador no soporta geolocalización');
+    }
+  }
+
+  function calculateRoute() {
+    const originInput = document.getElementById('origin-input');
+    const destinationInput = document.getElementById('destination-input');
+    
+    let origin = userLocation;
+    
+    // Si el usuario modificó el origen, usar esas coordenadas
+    if (originInput.dataset.lat && originInput.dataset.lon) {
+      origin = {
+        lat: parseFloat(originInput.dataset.lat),
+        lng: parseFloat(originInput.dataset.lon)
+      };
+    }
+
+    if (!origin) {
+      alert('Por favor, espera a que se detecte tu ubicación o ingresa una dirección de origen.');
+      return;
+    }
+
+    if (!destinationInput.value) {
+      alert('Por favor ingresa una dirección de destino');
+      return;
+    }
+
+    // Si ya se seleccionó una sugerencia de destino, usar esas coordenadas
+    if (destinationInput.dataset.lat && destinationInput.dataset.lon) {
+      const destination = {
+        lat: parseFloat(destinationInput.dataset.lat),
+        lng: parseFloat(destinationInput.dataset.lon)
+      };
+      createRoute(origin, destination);
+    } else {
+      // Geocodificar destino usando Nominatim si no hay coordenadas guardadas
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinationInput.value)}&countrycodes=mx&limit=1`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            alert('No se encontró la dirección de destino. Intenta con otra dirección.');
+            return;
+          }
+
+          const destination = {
+            lat: parseFloat(data[0].lat),
+            lng: parseFloat(data[0].lon)
+          };
+          createRoute(origin, destination);
+        })
+        .catch(error => {
+          alert('Error al buscar la dirección. Verifica tu conexión.');
+          console.error('Error:', error);
+        });
+    }
+  }
+
+  function createRoute(origin, destination) {
+    // Remover marcador de usuario anterior si existe
+    if (userMarker) {
+      map.removeLayer(userMarker);
+    }
+
+    // Remover ruta anterior si existe
+    if (routingControl) {
+      map.removeControl(routingControl);
+    }
+
+    // Crear nueva ruta
+    routingControl = L.Routing.control({
+      waypoints: [
+        L.latLng(origin.lat, origin.lng),
+        L.latLng(destination.lat, destination.lng)
+      ],
+      routeWhileDragging: false,
+      showAlternatives: false,
+      lineOptions: {
+        styles: [{ color: '#d97706', weight: 6, opacity: 0.8 }]
+      },
+      createMarker: function(i, waypoint, n) {
+        if (i === 0) {
+          // Marcador de origen (naranja)
+          return L.marker(waypoint.latLng, {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          });
+        }
+        // Marcador de destino (verde)
+        return L.marker(waypoint.latLng, {
+          icon: L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          })
+        });
+      }
+    }).addTo(map);
+
+    // Escuchar evento de ruta calculada
+    routingControl.on('routesfound', function(e) {
+      const route = e.routes[0];
+      const distance = (route.summary.totalDistance / 1000).toFixed(2);
+      const duration = Math.round(route.summary.totalTime / 60);
+
+      document.getElementById('distance-text').textContent = distance + ' km';
+      document.getElementById('duration-text').textContent = duration + ' min';
+      document.getElementById('route-info').style.display = 'block';
+      
+      // Guardar distancia para recalcular después
+      window.currentDistance = parseFloat(distance);
+      
+      // Calcular y mostrar cotización inicial
+      calcularCotizacion();
+      
+      // Mostrar recuadro de cotización
+      document.getElementById('cotizacion-box').style.display = 'block';
+    });
+  }
+
+  // Función para calcular cotización
+  function calcularCotizacion() {
+    const distanceNum = window.currentDistance || 0;
+    const tarifaPorKm = 25; // $25 por km
+    const servicioBase = 300; // $300 fijo
+    const costoKm = distanceNum * tarifaPorKm;
+    
+    // Verificar si hay cargadores seleccionados
+    const cargadoresCheckbox = document.getElementById('cargadores-checkbox');
+    const cargadoresCantidad = parseInt(document.getElementById('cargadores-cantidad').value) || 0;
+    const costoCargadores = cargadoresCheckbox && cargadoresCheckbox.checked ? cargadoresCantidad * 250 : 0;
+    
+    // Calcular costo adicional por muebles
+    const muebles = document.querySelectorAll('.mueble-checkbox:checked');
+    const cantidadMuebles = muebles.length;
+    let costoMuebles = 0;
+    
+    // Si hay más de 1 mueble, se cobran los adicionales
+    if (cantidadMuebles > 1) {
+      muebles.forEach(mueble => {
+        const id = mueble.id;
+        // No se cobra el primer mueble, solo los adicionales
+        if (id === 'mueble-estufa') {
+          costoMuebles += 50;
+        } else if (id === 'mueble-lavadora') {
+          costoMuebles += 50;
+        } else if (id === 'mueble-sala') {
+          costoMuebles += 150;
+        } else if (id === 'mueble-comedor') {
+          costoMuebles += 200;
+        } else if (id === 'mueble-cama') {
+          costoMuebles += 200;
+        }
+        // Los demás muebles (refri, escritorio, otros) no tienen costo adicional especificado
+      });
+      
+      // Restar el costo de uno de los muebles (el primero está incluido en el precio base)
+      // Identificar cuál fue el primer mueble seleccionado y restarlo
+      const primerMueble = muebles[0].id;
+      if (primerMueble === 'mueble-estufa' || primerMueble === 'mueble-lavadora') {
+        costoMuebles -= 50;
+      } else if (primerMueble === 'mueble-sala') {
+        costoMuebles -= 150;
+      } else if (primerMueble === 'mueble-comedor' || primerMueble === 'mueble-cama') {
+        costoMuebles -= 200;
+      }
+    }
+    
+    const total = costoKm + servicioBase + costoCargadores + costoMuebles;
+    
+    // Redondear el total a múltiplos de 50
+    const totalRedondeado = Math.ceil(total / 50) * 50;
+    
+    // Mostrar valores
+    document.getElementById('cotiz-distance').textContent = distanceNum.toFixed(2) + ' km';
+    document.getElementById('cotiz-total').textContent = '$' + totalRedondeado.toFixed(2);
+    
+    // Actualizar info de cargadores si están seleccionados
+    if (costoCargadores > 0) {
+      document.getElementById('cargadores-num').textContent = cargadoresCantidad;
+      document.getElementById('cargadores-total').textContent = '$' + costoCargadores.toFixed(2);
+      document.getElementById('cargadores-costo').style.display = 'flex';
+    } else {
+      document.getElementById('cargadores-costo').style.display = 'none';
+    }
+    
+    // Mostrar info de muebles adicionales si hay costo
+    const mueblesCostoDiv = document.getElementById('muebles-costo');
+    if (costoMuebles > 0 && mueblesCostoDiv) {
+      document.getElementById('muebles-total').textContent = '$' + costoMuebles.toFixed(2);
+      mueblesCostoDiv.style.display = 'flex';
+    } else if (mueblesCostoDiv) {
+      mueblesCostoDiv.style.display = 'none';
+    }
+  }
+
+  // Event listeners
+  document.getElementById('calculate-route-btn').addEventListener('click', calculateRoute);
+
+  // Listener para checkbox de cargadores
+  document.addEventListener('DOMContentLoaded', function() {
+    const cargadoresCheckbox = document.getElementById('cargadores-checkbox');
+    const cargadoresSelector = document.getElementById('cargadores-selector');
+    const cargadoresCantidad = document.getElementById('cargadores-cantidad');
+    
+    cargadoresCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        cargadoresSelector.style.display = 'block';
+      } else {
+        cargadoresSelector.style.display = 'none';
+      }
+      calcularCotizacion();
+    });
+    
+    cargadoresCantidad.addEventListener('change', function() {
+      calcularCotizacion();
+    });
+    
+    // Listeners para subopciones de muebles
+    const refriCheckbox = document.getElementById('mueble-refri');
+    const refriOptions = document.getElementById('refri-options');
+    
+    refriCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        refriOptions.style.display = 'block';
+      } else {
+        refriOptions.style.display = 'none';
+        // Desmarcar subopciones
+        document.querySelectorAll('input[name="refri-tipo"]').forEach(r => r.checked = false);
+      }
+    });
+    
+    const camaCheckbox = document.getElementById('mueble-cama');
+    const camaOptions = document.getElementById('cama-options');
+    
+    camaCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        camaOptions.style.display = 'block';
+      } else {
+        camaOptions.style.display = 'none';
+        // Desmarcar subopciones
+        document.querySelectorAll('input[name="cama-parte"]').forEach(c => c.checked = false);
+      }
+    });
+    
+    const salaCheckbox = document.getElementById('mueble-sala');
+    const salaOptions = document.getElementById('sala-options');
+    
+    salaCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        salaOptions.style.display = 'block';
+      } else {
+        salaOptions.style.display = 'none';
+        // Desmarcar subopciones
+        document.querySelectorAll('input[name="sala-tipo"]').forEach(r => r.checked = false);
+      }
+      calcularCotizacion();
+    });
+    
+    // Listener para checkbox de "Otros" - mostrar opción de subir foto
+    const otrosCheckbox = document.getElementById('mueble-otros');
+    const otrosFotoUpload = document.getElementById('otros-foto-upload');
+    const otrosFotoInput = document.getElementById('otros-foto');
+    const fotoPreview = document.getElementById('foto-preview');
+    const fotoPreviewImg = document.getElementById('foto-preview-img');
+    
+    otrosCheckbox.addEventListener('change', function() {
+      if (this.checked) {
+        otrosFotoUpload.style.display = 'block';
+      } else {
+        otrosFotoUpload.style.display = 'none';
+        otrosFotoInput.value = '';
+        fotoPreview.style.display = 'none';
+      }
+    });
+    
+    // Listener para mostrar preview de la foto
+    otrosFotoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          fotoPreviewImg.src = event.target.result;
+          fotoPreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Event listeners para recalcular cuando cambian los muebles
+    document.querySelectorAll('.mueble-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', calcularCotizacion);
+    });
+  });
+
+  // Función para solicitar servicio vía WhatsApp
+  function solicitarServicio() {
+    // Verificar que se haya calculado una ruta
+    if (!window.currentDistance || window.currentDistance === 0) {
+      alert('Por favor, primero calcula la ruta para poder solicitar el servicio.');
+      return;
+    }
+    
+    // Obtener información de la cotización
+    const distancia = document.getElementById('distance-text').textContent;
+    const tiempo = document.getElementById('duration-text').textContent;
+    const total = document.getElementById('cotiz-total').textContent;
+    
+    // Obtener direcciones
+    const origen = document.getElementById('origin-input').value;
+    const destino = document.getElementById('destination-input').value;
+    
+    // Obtener muebles seleccionados
+    const mueblesCheckboxes = document.querySelectorAll('.mueble-checkbox:checked');
+    let mueblesList = [];
+    
+    mueblesCheckboxes.forEach(checkbox => {
+      const label = checkbox.parentElement.querySelector('span');
+      let muebleNombre = label.textContent;
+      
+      // Verificar si tiene subopciones seleccionadas
+      const checkboxId = checkbox.id;
+      if (checkboxId === 'mueble-refri') {
+        const refriTipo = document.querySelector('input[name="refri-tipo"]:checked');
+        if (refriTipo) {
+          muebleNombre += ' (' + refriTipo.parentElement.textContent.trim() + ')';
+        }
+      } else if (checkboxId === 'mueble-cama') {
+        const camaTipo = document.querySelector('input[name="cama-parte"]:checked');
+        if (camaTipo) {
+          muebleNombre += ' (' + camaTipo.parentElement.textContent.trim() + ')';
+        }
+      } else if (checkboxId === 'mueble-sala') {
+        const salaTipo = document.querySelector('input[name="sala-tipo"]:checked');
+        if (salaTipo) {
+          muebleNombre += ' (' + salaTipo.parentElement.textContent.trim() + ')';
+        }
+      }
+      
+      mueblesList.push(muebleNombre);
+    });
+    
+    const muebles = mueblesList.join(', ') || 'No especificados';
+    
+    // Obtener información de cargadores
+    const cargadoresCheckbox = document.getElementById('cargadores-checkbox');
+    let cargadoresInfo = 'No';
+    if (cargadoresCheckbox && cargadoresCheckbox.checked) {
+      const cantidad = document.getElementById('cargadores-cantidad').value;
+      cargadoresInfo = `Sí (${cantidad} cargador${cantidad > 1 ? 'es' : ''})`;
+    }
+    
+    // Verificar si hay foto de "Otros"
+    const otrosFoto = document.getElementById('otros-foto');
+    let fotoNota = '';
+    if (otrosFoto && otrosFoto.files.length > 0) {
+      fotoNota = '\n📷 Nota: Se adjuntará foto del mueble "Otros"';
+    }
+    
+    // Construir mensaje
+    const mensaje = `Hola, quiero solicitar el servicio de flete:
+
+📍 *Ruta:*
+• Origen: ${origen}
+• Destino: ${destino}
+• Distancia: ${distancia}
+• Tiempo estimado: ${tiempo}
+
+📦 *Muebles a transportar:*
+${muebles}
+
+👷 *Cargadores:* ${cargadoresInfo}
+
+💰 *TOTAL: ${total}*${fotoNota}
+
+¿Cuándo podría agendar el servicio?`;
+    
+    const whatsappUrl = `https://wa.me/5214424597543?text=${encodeURIComponent(mensaje)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+
+  // Inicializar mapa cuando cargue la página
+  window.addEventListener('load', initMap);
+</script>
+
+    </div> <!-- Cierra col-lg-12 -->
+  </div> <!-- Cierra row interna -->
+  </div> <!-- Cierra col-lg-10 -->
+  </div> <!-- Cierra row principal -->
+</div> <!-- Cierra container-fluid -->
+
+<!-- Nuestras Unidades -->
+<div class="container mt-5 mb-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-lg border-0" style="background: white; border-radius: 15px; padding: 40px; text-align: center;">
+        <h2 class="fw-700 mb-3" style="color: #0b2f44; font-size: 2rem;">🚚 Nuestras Unidades</h2>
+        <p class="mb-4" style="color: #666; font-size: 1.1rem;">Contamos con vehículos amplios y en excelente estado para garantizar la seguridad de tus pertenencias</p>
+        <a href="{{ url_for('unidades') }}" class="btn btn-lg fw-600 px-5 py-3" style="background: var(--accent-2); color: white; border-radius: 10px; font-size: 1.1rem;">
+          Ver Nuestras Unidades →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para imagen ampliada -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="border: none; padding: 10px;">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <img id="modalImage" src="" class="img-fluid" style="width: 100%; border-radius: 0 0 8px 8px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Función para alternar galería
+  function toggleGallery() {
+    const content = document.getElementById('galleryContent');
+    const icon = document.getElementById('toggleIcon');
+    if (content.style.display === 'none' || content.style.display === '') {
+      content.style.display = 'block';
+      icon.textContent = '▲';
+    } else {
+      content.style.display = 'none';
+      icon.textContent = '▼';
+    }
+  }
+
+  // Función para mostrar imagen en modal
+  function showImage(src) {
+    document.getElementById('modalImage').src = src;
+  }
+</script>
+
+{% endblock %}

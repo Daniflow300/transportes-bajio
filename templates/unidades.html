@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Nuestras Unidades - Transportes del Bajío{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 60px 0; margin: -32px -15px 40px -15px; text-align: center;">
+  <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">🚚 Nuestras Unidades</h1>
+  <p style="font-size: 1.2rem; color: var(--accent-2); font-weight: 500;">Vehículos amplios y en excelente estado</p>
+</div>
+
+<div class="container">
+  <!-- Descripción -->
+  <section style="margin-bottom: 50px;">
+    <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); text-align: center;">
+      <p style="font-size: 1.1rem; line-height: 1.8; color: #333; margin-bottom: 15px;">
+        En <strong>Transportes del Bajío</strong> contamos con una flota de vehículos amplios, mantenidos en óptimas condiciones y equipados para garantizar la seguridad de tus pertenencias durante todo el traslado.
+      </p>
+      <p style="font-size: 1.05rem; line-height: 1.8; color: #666; margin-bottom: 0;">
+        Todas nuestras unidades cuentan con verificación vigente, seguro y personal capacitado para operar de manera profesional.
+      </p>
+    </div>
+  </section>
+
+  <!-- Galería de Unidades -->
+  <section style="margin-bottom: 50px;">
+    <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 30px; text-align: center;">Nuestra Flota</h2>
+    
+    <div class="row g-4">
+      <!-- Camioneta 1 -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 h-100" style="border-radius: 12px; overflow: hidden;">
+          <img src="{{ url_for('static', filename='img/camioneta1.jpeg') }}" class="card-img-top" style="height: 250px; object-fit: cover; cursor: pointer;" alt="Camioneta 1" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/camioneta1.jpeg') }}')">
+          <div class="card-body text-center">
+            <h5 style="color: #0b2f44; font-weight: 700;">Camioneta 1</h5>
+            <p style="color: #666; font-size: 0.9rem;">Camioneta tipo pickup</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camioneta 2 -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 h-100" style="border-radius: 12px; overflow: hidden;">
+          <img src="{{ url_for('static', filename='img/camioneta2.jpeg') }}" class="card-img-top" style="height: 250px; object-fit: cover; cursor: pointer;" alt="Camioneta 2" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/camioneta2.jpeg') }}')">
+          <div class="card-body text-center">
+            <h5 style="color: #0b2f44; font-weight: 700;">Camioneta 2</h5>
+            <p style="color: #666; font-size: 0.9rem;">Camioneta tipo pickup</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camión 1 -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm border-0 h-100" style="border-radius: 12px; overflow: hidden;">
+          <img src="{{ url_for('static', filename='img/camion1.jpeg') }}" class="card-img-top" style="height: 250px; object-fit: cover; cursor: pointer;" alt="Camión 1" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/camion1.jpeg') }}')">
+          <div class="card-body text-center">
+            <h5 style="color: #0b2f44; font-weight: 700;">Camión 1</h5>
+            <p style="color: #666; font-size: 0.9rem;">Camión de carga</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Características de nuestras unidades -->
+  <section style="margin-bottom: 50px;">
+    <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 30px; text-align: center;">Características de Nuestras Unidades</h2>
+    <div class="row g-4">
+      <div class="col-md-3 col-6">
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">✅</div>
+          <h5 style="color: #0b2f44; font-weight: 700; font-size: 1rem;">Verificación Vigente</h5>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">🛡️</div>
+          <h5 style="color: #0b2f44; font-weight: 700; font-size: 1rem;">Seguro de Viajero</h5>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">🔧</div>
+          <h5 style="color: #0b2f44; font-weight: 700; font-size: 1rem;">Mantenimiento Regular</h5>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">👨‍✈️</div>
+          <h5 style="color: #0b2f44; font-weight: 700; font-size: 1rem;">Personal Capacitado</h5>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="margin-bottom: 40px;">
+    <div style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 40px; border-radius: 12px; text-align: center;">
+      <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 15px;">¿Listo para tu mudanza o flete?</h3>
+      <p style="font-size: 1.1rem; margin-bottom: 25px; opacity: 0.95;">Contáctanos y agenda tu servicio con nuestras unidades profesionales</p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="https://wa.me/5214424597543" target="_blank" class="btn btn-light fw-600 px-4 py-2" style="border-radius: 8px;">
+          📱 WhatsApp
+        </a>
+        <a href="tel:4424597543" class="btn fw-600 px-4 py-2" style="background: var(--accent-2); color: white; border: none; border-radius: 8px;">
+          📞 Llamar ahora
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Modal para ver imágenes en grande -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Unidad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalImage" src="" class="img-fluid" style="max-height: 70vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showImage(src) {
+  document.getElementById('modalImage').src = src;
+}
+</script>
+
+{% endblock %}

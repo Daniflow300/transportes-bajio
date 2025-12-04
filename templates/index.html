@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% block title %}Transportes del Bajío{% endblock %}
+{% block content %}
+
+{% if 'email' in session %}
+<!-- Contenido para usuarios con sesión iniciada -->
+<div class="container-fluid py-5">
+  <div class="row">
+    <!-- Sidebar izquierdo - Servicios Realizados -->
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0" style="position: sticky; top: 20px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 15px; cursor: pointer;" onclick="toggleGallery()">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-700">📸 Servicios Realizados</h5>
+            <span id="toggleIcon">▼</span>
+          </div>
+        </div>
+        <div class="card-body p-2" id="galleryContent" style="display: none;">
+          <div class="row g-2">
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete2.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete2.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete3.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete3.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete4.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete4.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete5.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete5.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda1.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda1.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda2.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda2.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda3.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 100px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda3.jpeg') }}')">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="col-md-9">
+      <div class="container">
+        <!-- Hero Section -->
+        <section class="text-center mb-5">
+          <h1 class="fw-700 mb-3" style="color: #0b2f44; font-size: 2.5rem;">
+            Bienvenido {{ session['nombre'] }} a Transportes del Bajío
+          </h1>
+          <p class="lead" style="color: #666; font-size: 1.2rem; max-width: 800px; margin: 0 auto;">
+            Tu aliado confiable en servicios de transporte, fletes y mudanzas en Querétaro y alrededores.
+          </p>
+        </section>
+
+  <!-- Servicios -->
+  <section class="row g-4 mb-5">
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0" style="border-left: 4px solid var(--accent-2) !important;">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-2), #f59e0b); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 16 16">
+                <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5v-7zm1.294 7.456A1.999 1.999 0 0 1 4.732 11h5.536a2.01 2.01 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+              </svg>
+            </div>
+            <h3 class="fw-700 mb-0" style="color: #0b2f44; font-size: 1.4rem;">Fletes</h3>
+          </div>
+          <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+            Transporte de muebles, electrodomésticos y mercancía en general. Servicio local y foráneo con unidades equipadas y personal capacitado.
+          </p>
+          <a href="{{ url_for('fletes') }}" class="btn" style="background: var(--accent-2); color: white; font-weight: 600; padding: 10px 25px; border-radius: 8px;">
+            Ver Servicio de Fletes →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0" style="border-left: 4px solid #0b2f44 !important;">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #0b2f44, #072734); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 16 16">
+                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+              </svg>
+            </div>
+            <h3 class="fw-700 mb-0" style="color: #0b2f44; font-size: 1.4rem;">Mudanzas</h3>
+          </div>
+          <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+            Mudanzas residenciales y comerciales completas. Empaque, carga, transporte y descarga de tus pertenencias con el máximo cuidado.
+          </p>
+          <a href="{{ url_for('mudanzas') }}" class="btn" style="background: #0b2f44; color: white; font-weight: 600; padding: 10px 25px; border-radius: 8px;">
+            Ver Servicio de Mudanzas →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Por qué elegirnos -->
+  <section class="mb-5">
+    <h2 class="text-center fw-700 mb-4" style="color: #0b2f44; font-size: 2rem;">¿Por qué elegirnos?</h2>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="text-center p-4">
+          <div style="width: 60px; height: 60px; background: rgba(217,119,6,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="var(--accent-2)" viewBox="0 0 16 16">
+              <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+            </svg>
+          </div>
+          <h4 class="fw-600" style="color: #0b2f44;">Experiencia</h4>
+          <p style="color: #666; font-size: 0.95rem;">Años de experiencia en el sector de transporte y mudanzas.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center p-4">
+          <div style="width: 60px; height: 60px; background: rgba(217,119,6,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="var(--accent-2)" viewBox="0 0 16 16">
+              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+            </svg>
+          </div>
+          <h4 class="fw-600" style="color: #0b2f44;">Puntualidad</h4>
+          <p style="color: #666; font-size: 0.95rem;">Cumplimos con los tiempos acordados en cada servicio.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center p-4">
+          <div style="width: 60px; height: 60px; background: rgba(217,119,6,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="var(--accent-2)" viewBox="0 0 16 16">
+              <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/>
+            </svg>
+          </div>
+          <h4 class="fw-600" style="color: #0b2f44;">Seguridad</h4>
+          <p style="color: #666; font-size: 0.95rem;">Tus pertenencias están protegidas durante todo el traslado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="text-center p-5" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); border-radius: 12px; color: white;">
+    <h3 class="fw-700 mb-3" style="font-size: 1.8rem;">¿Necesitas un servicio ahora?</h3>
+    <p class="mb-4" style="font-size: 1.1rem; opacity: 0.95;">Contáctanos y recibe una cotización personalizada</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="https://wa.me/5214424597543" target="_blank" class="btn btn-light fw-600 px-4 py-2">
+        📱 WhatsApp
+      </a>
+      <a href="tel:4424597543" class="btn fw-600 px-4 py-2" style="background: var(--accent-2); color: white; border: none;">
+        📞 Llamar ahora
+      </a>
+    </div>
+  </section>
+</div>
+</div>
+
+<!-- Modal para ver imágenes en grande -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Servicio Realizado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalImage" src="" class="img-fluid" style="max-height: 70vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showImage(src) {
+  document.getElementById('modalImage').src = src;
+}
+
+function toggleGallery() {
+  const gallery = document.getElementById('galleryContent');
+  const icon = document.getElementById('toggleIcon');
+  
+  if (gallery.style.display === 'none') {
+    gallery.style.display = 'block';
+    icon.textContent = '▲';
+  } else {
+    gallery.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
+</script>
+
+{% else %}
+<!-- Contenido para usuarios sin sesión -->
+<div class="container-fluid py-5">
+  <div class="row align-items-start g-4">
+    
+    <!-- Columna izquierda - Imágenes de servicios -->
+    <div class="col-lg-3 col-md-4">
+      <div class="row g-3">
+        <div class="col-12">
+          <img src="{{ url_for('static', filename='img/flete.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete.jpeg') }}')">
+        </div>
+        <div class="col-12">
+          <img src="{{ url_for('static', filename='img/muda1.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda1.jpeg') }}')">
+        </div>
+        <div class="col-12">
+          <img src="{{ url_for('static', filename='img/flete2.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete2.jpeg') }}')">
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna central - Tarjeta de bienvenida -->
+    <div class="col-lg-6 col-md-4">
+      <div class="card shadow-lg border-0" style="border-radius: 15px;">
+        <div class="card-body p-5 text-center">
+          <h1 class="fw-700 mb-3" style="color: var(--accent-2); font-size: 2.2rem;">Bienvenido a Fletes y Mudanzas</h1>
+          <p class="lead mb-4" style="color: var(--muted); font-size: 1.1rem;">Servicio profesional de transporte, mudanzas y logística. Rápido, confiable y eficiente.</p>
+          
+          <!-- Servicios destacados -->
+          <div class="row g-3 mb-4 text-start">
+            <div class="col-6">
+              <div class="p-3" style="background: rgba(217,119,6,0.08); border-radius: 10px;">
+                <div class="fw-600" style="color: #0b2f44;">🚚 Fletes</div>
+                <small style="color: #666;">Muebles y mercancía</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3" style="background: rgba(11,47,68,0.08); border-radius: 10px;">
+                <div class="fw-600" style="color: #0b2f44;">🏠 Mudanzas</div>
+                <small style="color: #666;">Residenciales y comerciales</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3" style="background: rgba(217,119,6,0.08); border-radius: 10px;">
+                <div class="fw-600" style="color: #0b2f44;">⏰ Puntualidad</div>
+                <small style="color: #666;">Entregas a tiempo</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3" style="background: rgba(11,47,68,0.08); border-radius: 10px;">
+                <div class="fw-600" style="color: #0b2f44;">🔒 Seguridad</div>
+                <small style="color: #666;">Carga protegida</small>
+              </div>
+            </div>
+          </div>
+
+          <a href="{{ url_for('login') }}" class="btn btn-success fw-600 px-5 py-3 mb-3" style="font-size: 1.1rem; border-radius: 10px;">Iniciar Sesión</a>
+          <p class="mt-3 small" style="color: var(--muted);">¿No tienes cuenta? <a href="{{ url_for('register') }}" class="fw-600" style="color: var(--accent-2);">Crea una aquí</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna derecha - Más imágenes de servicios -->
+    <div class="col-lg-3 col-md-4">
+      <div class="row g-3">
+        <div class="col-12">
+          <img src="{{ url_for('static', filename='img/flete3.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete3.jpeg') }}')">
+        </div>
+        <div class="col-12">
+          <img src="{{ url_for('static', filename='img/muda2.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda2.jpeg') }}')">
+        </div>
+        <div class="col-12">
+          <img src="{{ url_for('static', filename='img/flete4.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete4.jpeg') }}')">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fila inferior con más imágenes -->
+  <div class="row g-3 mt-3">
+    <div class="col-lg-4 col-md-6 col-12">
+      <img src="{{ url_for('static', filename='img/flete5.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete5.jpeg') }}')">
+    </div>
+    <div class="col-lg-4 col-md-6 col-12">
+      <img src="{{ url_for('static', filename='img/muda3.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda3.jpeg') }}')">
+    </div>
+    <div class="col-lg-4 col-md-12 col-12">
+      <img src="{{ url_for('static', filename='img/flete.jpeg') }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete.jpeg') }}')">
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card shadow-lg border-0" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); border-radius: 15px; padding: 40px;">
+        <div class="row text-center text-white g-4">
+          <div class="col-md-4">
+            <div class="p-3">
+              <h2 class="fw-700 mb-2" style="font-size: 3rem; color: var(--accent-2);">+1000</h2>
+              <p class="mb-0 fw-600" style="font-size: 1.2rem;">Mudanzas Realizadas</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3">
+              <h2 class="fw-700 mb-2" style="font-size: 3rem; color: var(--accent-2);">98%</h2>
+              <p class="mb-0 fw-600" style="font-size: 1.2rem;">Satisfacción</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3">
+              <h2 class="fw-700 mb-2" style="font-size: 3rem; color: var(--accent-2);">+1500</h2>
+              <p class="mb-0 fw-600" style="font-size: 1.2rem;">Servicios Realizados</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nuestras Unidades -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card shadow-lg border-0" style="background: white; border-radius: 15px; padding: 40px; text-align: center;">
+        <h2 class="fw-700 mb-3" style="color: #0b2f44; font-size: 2rem;">🚚 Nuestras Unidades</h2>
+        <p class="mb-4" style="color: #666; font-size: 1.1rem;">Contamos con vehículos amplios y en excelente estado para garantizar la seguridad de tus pertenencias</p>
+        <a href="{{ url_for('unidades') }}" class="btn btn-lg fw-600 px-5 py-3" style="background: var(--accent-2); color: white; border-radius: 10px; font-size: 1.1rem;">
+          Ver Nuestras Unidades →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver imágenes en grande -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Servicio Realizado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalImage" src="" class="img-fluid" style="max-height: 70vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showImage(src) {
+  document.getElementById('modalImage').src = src;
+}
+</script>
+
+{% endif %}
+
+{% endblock %}

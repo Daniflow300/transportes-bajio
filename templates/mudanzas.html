@@ -1,0 +1,971 @@
+{% extends "base.html" %}
+
+{% block title %}Mudanzas - Transportes del Bajío{% endblock %}
+
+{% block content %}
+<!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <style>
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+    </style><div style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 60px 0; margin: -32px -15px 40px -15px; text-align: center;">
+  <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">Mudanzas</h1>
+  <p style="font-size: 1.2rem; color: var(--accent-2); font-weight: 500;">Servicio profesional de mudanzas locales y foráneas</p>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar izquierdo - Servicios Realizados -->
+    <div class="col-lg-2 col-md-3">
+      <div class="card shadow-sm border-0" style="position: sticky; top: 20px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; padding: 15px; cursor: pointer;" onclick="toggleGallery()">
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-700">📸 Servicios Realizados</h6>
+            <span id="toggleIcon">▼</span>
+          </div>
+        </div>
+        <div class="card-body p-2" id="galleryContent" style="display: none;">
+          <div class="row g-2">
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete2.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete2.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete3.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete3.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete4.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete4.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/flete5.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Flete realizado" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/flete5.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda1.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda1.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda2.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda2.jpeg') }}')">
+            </div>
+            <div class="col-6">
+              <img src="{{ url_for('static', filename='img/muda3.jpeg') }}" class="img-fluid rounded" style="width: 100%; height: 80px; object-fit: cover; cursor: pointer;" alt="Mudanza realizada" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('{{ url_for('static', filename='img/muda3.jpeg') }}')">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="col-lg-10 col-md-9">
+<div class="row">
+  <div class="col-lg-12">
+    <!-- Descripción General -->
+    <section style="margin-bottom: 50px;">
+      <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+        <p style="font-size: 1.05rem; line-height: 1.8; color: #333; margin-bottom: 15px;">
+          En <strong>Transportes del Bajío</strong> ofrecemos servicios completos de mudanzas residenciales y comerciales. Nos encargamos de embalar, transportar y desembalar tus pertenencias con el máximo cuidado y profesionalismo.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8; color: #333; margin-bottom: 15px;">
+          Realizamos mudanzas locales dentro de Querétaro y foráneas a cualquier destino de la República Mexicana. Contamos con personal capacitado, equipo especializado y unidades en excelentes condiciones.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.8; color: #333; margin-bottom: 0;">
+          Nuestro servicio incluye: embalaje profesional, carga y descarga, transporte seguro, desembalaje y acomodo en tu nuevo domicilio.
+        </p>
+      </div>
+    </section>
+
+    <!-- Tipos de Mudanza -->
+    <section style="margin-bottom: 50px;">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 25px; text-align: center;">Tipos de Mudanza</h2>
+      <div class="row">
+        <div class="col-md-6" style="margin-bottom: 20px;">
+          <div style="background: linear-gradient(135deg, rgba(217,119,6,0.1) 0%, rgba(217,119,6,0.05) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid var(--accent-2); height: 100%;">
+            <h3 style="color: #0b2f44; font-size: 1.3rem; font-weight: 700; margin-bottom: 12px;">🏠 Mudanza Residencial</h3>
+            <p style="color: #555; font-size: 0.95rem; line-height: 1.7;">
+              Mudanzas de casas, departamentos y condominios. Incluye empaque de vajilla, cristalería, ropa y objetos delicados. Desmontaje y montaje de muebles.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6" style="margin-bottom: 20px;">
+          <div style="background: linear-gradient(135deg, rgba(217,119,6,0.1) 0%, rgba(217,119,6,0.05) 100%); padding: 25px; border-radius: 12px; border-left: 4px solid var(--accent-2); height: 100%;">
+            <h3 style="color: #0b2f44; font-size: 1.3rem; font-weight: 700; margin-bottom: 12px;">🏢 Mudanza Comercial</h3>
+            <p style="color: #555; font-size: 0.95rem; line-height: 1.7;">
+              Traslado de oficinas, negocios y empresas. Manejo de equipo de oficina, archivos, mobiliario comercial y tecnología. Servicio fuera de horarios laborales.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paquetes Disponibles -->
+    <section style="margin-bottom: 50px;">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 25px; text-align: center;">Paquetes disponibles</h2>
+      <div class="row g-4">
+        <!-- Básico -->
+        <div class="col-md-4">
+          <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); height: 100%; text-align: center; border: 2px solid #e5e7eb;">
+            <h3 style="color: #0b2f44; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px;">Básico</h3>
+            <p style="color: #666; font-size: 1rem; line-height: 1.8; margin: 0;">
+              Incluye traslado.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Estándar -->
+        <div class="col-md-4">
+          <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); height: 100%; text-align: center; border: 3px solid var(--accent-2); position: relative;">
+            <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--accent-2); color: white; padding: 5px 20px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+              RECOMENDADO
+            </div>
+            <h3 style="color: #0b2f44; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; margin-top: 10px;">Estándar</h3>
+            <p style="color: #666; font-size: 1rem; line-height: 1.8; margin: 0;">
+              Traslado + carga y descarga.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Premium -->
+        <div class="col-md-4">
+          <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); height: 100%; text-align: center; border: 2px solid #e5e7eb;">
+            <h3 style="color: #0b2f44; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px;">Premium</h3>
+            <p style="color: #666; font-size: 1rem; line-height: 1.8; margin: 0;">
+              Embalaje + traslado + descarga + acomodo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inventario de Mudanza -->
+    <section style="margin-bottom: 50px;">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 25px; text-align: center;">📋 Inventario de Mudanza</h2>
+      <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 1rem;">
+        Selecciona los muebles y artículos que vas a trasladar en tu mudanza
+      </p>
+      
+      <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+        
+        <!-- Sala -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-2);">
+            🛋️ Sala
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Sala 3 piezas" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Sala 3 piezas</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Sala 2 piezas" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Sala 2 piezas</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Sillón individual" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Sillón individual</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Mesa de centro" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Mesa de centro</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Comedor -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-2);">
+            🍽️ Comedor
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Comedor 6 sillas" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Comedor 6 sillas</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Comedor 4 sillas" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Comedor 4 sillas</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Antecomedor" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Antecomedor</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Recámaras -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-2);">
+            🛏️ Recámaras
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                <input type="checkbox" id="cama-king-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="color: #333; font-size: 0.95rem;">Cama King Size</span>
+              </label>
+              <div id="cama-king-options" style="margin-left: 26px; display: none;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-king-cantidad" value="1 cama King Size" class="cama-king-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">1 cama</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-king-cantidad" value="2 camas King Size" class="cama-king-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">2 camas</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="cama-king-cantidad" value="3 camas King Size" class="cama-king-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">3 camas</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                <input type="checkbox" id="cama-queen-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="color: #333; font-size: 0.95rem;">Cama Queen Size</span>
+              </label>
+              <div id="cama-queen-options" style="margin-left: 26px; display: none;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-queen-cantidad" value="1 cama Queen Size" class="cama-queen-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">1 cama</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-queen-cantidad" value="2 camas Queen Size" class="cama-queen-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">2 camas</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="cama-queen-cantidad" value="3 camas Queen Size" class="cama-queen-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">3 camas</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                <input type="checkbox" id="cama-matrimonial-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="color: #333; font-size: 0.95rem;">Cama Matrimonial</span>
+              </label>
+              <div id="cama-matrimonial-options" style="margin-left: 26px; display: none;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-matrimonial-cantidad" value="1 cama Matrimonial" class="cama-matrimonial-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">1 cama</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-matrimonial-cantidad" value="2 camas Matrimoniales" class="cama-matrimonial-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">2 camas</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="cama-matrimonial-cantidad" value="3 camas Matrimoniales" class="cama-matrimonial-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">3 camas</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                <input type="checkbox" id="cama-individual-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="color: #333; font-size: 0.95rem;">Cama Individual</span>
+              </label>
+              <div id="cama-individual-options" style="margin-left: 26px; display: none;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-individual-cantidad" value="1 cama Individual" class="cama-individual-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">1 cama</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 5px;">
+                  <input type="radio" name="cama-individual-cantidad" value="2 camas Individuales" class="cama-individual-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">2 camas</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="cama-individual-cantidad" value="3 camas Individuales" class="cama-individual-radio" style="width: 16px; height: 16px; cursor: pointer;">
+                  <span style="color: #555; font-size: 0.9rem;">3 camas</span>
+                </label>
+              </div>
+            </div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Colchón" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Colchón</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Buró" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Buró</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Tocador" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Tocador</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Ropero/Closet" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Ropero/Closet</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Electrodomésticos -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-2);">
+            🔌 Electrodomésticos
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Refrigerador" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Refrigerador</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Estufa" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Estufa</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Lavadora" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Lavadora</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Secadora" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Secadora</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Microondas" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Microondas</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="TV" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">TV</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Otros muebles -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-2);">
+            📚 Otros Muebles
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Escritorio" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Escritorio</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Librero" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Librero</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Estante" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Estante</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Bicicleta" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Bicicleta</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Cajas y artículos varios -->
+        <div style="margin-bottom: 20px;">
+          <h3 style="color: #0b2f44; font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-2);">
+            📦 Cajas y Artículos
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px;">
+            <div>
+              <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+                Número aproximado de cajas:
+              </label>
+              <input type="number" id="num-cajas" min="0" value="0" style="padding: 8px 12px; border: 2px solid var(--accent-2); border-radius: 6px; font-size: 0.95rem; width: 100%; max-width: 150px;">
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Plantas" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Plantas</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Cuadros/Espejos" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Cuadros/Espejos</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="mudanza-item" value="Instrumentos musicales" style="width: 18px; height: 18px; cursor: pointer;">
+              <span style="color: #333; font-size: 0.95rem;">Instrumentos musicales</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Resumen del inventario -->
+        <div id="inventario-resumen" style="margin-top: 25px; padding: 20px; background: rgba(217,119,6,0.08); border-radius: 8px; border-left: 3px solid var(--accent-2); display: none;">
+          <h4 style="color: #0b2f44; font-size: 1.1rem; font-weight: 700; margin-bottom: 15px;">📋 Resumen del Inventario</h4>
+          <div id="inventario-lista" style="color: #333; font-size: 0.95rem; line-height: 1.8;"></div>
+          <div style="text-align: center; margin-top: 20px;">
+            <button onclick="solicitarMudanza()" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); color: white; border: none; padding: 14px 40px; font-size: 1.05rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(37,211,102,0.3);">
+              <img src="{{ url_for('static', filename='img/whatsapp_icon.svg') }}" alt="WhatsApp" style="width: 24px; height: 24px;">
+              Solicitar Mudanza
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Servicios Incluidos -->
+    <section style="margin-bottom: 50px;">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 25px; text-align: center;">Servicios Incluidos</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">📦</div>
+          <h4 style="color: #0b2f44; font-weight: 600; font-size: 0.95rem;">Embalaje Profesional</h4>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">🔧</div>
+          <h4 style="color: #0b2f44; font-weight: 600; font-size: 0.95rem;">Desmontaje/Montaje</h4>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
+          <h4 style="color: #0b2f44; font-weight: 600; font-size: 0.95rem;">Seguro Opcional</h4>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">📍</div>
+          <h4 style="color: #0b2f44; font-weight: 600; font-size: 0.95rem;">Rastreo en Tiempo Real</h4>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mapa de Ubicación -->
+    <section style="margin-top: 50px; margin-bottom: 40px;">
+      <h2 style="color: #0b2f44; font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; text-align: center;">Calcula tu Ruta</h2>
+      
+      <!-- Formulario de Direcciones -->
+      <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 20px;">
+        <div class="row">
+          <div class="col-md-6" style="margin-bottom: 15px;">
+            <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+              📍 Origen
+            </label>
+            <div style="position: relative;">
+              <input type="text" id="origin-input" autocomplete="off" style="padding: 10px 14px; border: 2px solid var(--accent-2); border-radius: 8px; font-size: 0.95rem; width: 100%;" placeholder="Detectando ubicación...">
+              <div id="origin-suggestions" class="suggestions-list"></div>
+            </div>
+            <small style="color: #666; font-size: 0.8rem;">Se detectará automáticamente o puedes modificar</small>
+          </div>
+          <div class="col-md-6" style="margin-bottom: 15px;">
+            <label style="display: block; color: #0b2f44; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;">
+              🎯 Destino
+            </label>
+            <div style="position: relative;">
+              <input type="text" id="destination-input" autocomplete="off" style="padding: 10px 14px; border: 2px solid var(--accent-2); border-radius: 8px; font-size: 0.95rem; width: 100%;" placeholder="Escribe la dirección de destino...">
+              <div id="destination-suggestions" class="suggestions-list"></div>
+            </div>
+            <small style="color: #666; font-size: 0.8rem;">Ejemplo: Av. Universidad, Querétaro</small>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+          <button id="calculate-route-btn" style="background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); color: white; border: none; padding: 12px 40px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer;">
+            Calcular Ruta
+          </button>
+        </div>
+        
+        <!-- Información de la Ruta -->
+        <div id="route-info" style="margin-top: 20px; padding: 15px; background: rgba(217,119,6,0.08); border-radius: 8px; display: none;">
+          <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;">
+            <div style="text-align: center;">
+              <div style="color: #0b2f44; font-weight: 700; font-size: 1.5rem;" id="distance-text">-</div>
+              <div style="color: #666; font-size: 0.85rem;">Distancia</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="color: #0b2f44; font-weight: 700; font-size: 1.5rem;" id="duration-text">-</div>
+              <div style="color: #666; font-size: 0.85rem;">Tiempo estimado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Mapa -->
+      <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.12); height: 500px;" id="map"></div>
+    </section>
+
+    <!-- CTA -->
+    <section style="text-align: center; padding: 40px; background: linear-gradient(135deg, #0b2f44 0%, #072734 100%); border-radius: 12px; color: white; margin-top: 50px;">
+      <h3 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 15px;">¿Necesitas una mudanza?</h3>
+      <p style="font-size: 1.1rem; margin-bottom: 30px; opacity: 0.95;">Contactanos y recibe una cotización sin compromiso.</p>
+      <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <a href="https://wa.me/5214424597543" target="_blank" style="background-color: var(--accent-2); color: white; border: none; padding: 12px 35px; font-size: 1rem; font-weight: 600; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <img src="{{ url_for('static', filename='img/whatsapp_icon.svg') }}" alt="WhatsApp" class="wh-icon">
+          WhatsApp
+        </a>
+        <a href="https://www.facebook.com/share/1CTghwJAoa/" target="_blank" style="background-color: #1877f2; color: white; border: none; padding: 12px 35px; font-size: 1rem; font-weight: 600; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.3rem;">f</span> Facebook
+        </a>
+        <a href="tel:4424597543" style="background-color: #25d366; color: white; border: none; padding: 12px 35px; font-size: 1rem; font-weight: 600; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.3rem;">📞</span> 4424597543
+        </a>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+  let map;
+  let routingControl;
+  let userLocation = null;
+  let userMarker = null;
+  let searchTimeout = null;
+
+  // Función para buscar sugerencias de lugares
+  function searchPlaces(query, suggestionsId) {
+    if (query.length < 3) {
+      document.getElementById(suggestionsId).style.display = 'none';
+      return;
+    }
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=mx&limit=5`)
+      .then(response => response.json())
+      .then(data => {
+        const suggestionsDiv = document.getElementById(suggestionsId);
+        suggestionsDiv.innerHTML = '';
+        
+        if (data.length > 0) {
+          data.forEach(place => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = place.display_name;
+            div.onclick = function() {
+              const inputId = suggestionsId.replace('-suggestions', '-input');
+              const input = document.getElementById(inputId);
+              input.value = place.display_name;
+              input.dataset.lat = place.lat;
+              input.dataset.lon = place.lon;
+              suggestionsDiv.style.display = 'none';
+            };
+            suggestionsDiv.appendChild(div);
+          });
+          suggestionsDiv.style.display = 'block';
+        } else {
+          suggestionsDiv.style.display = 'none';
+        }
+      })
+      .catch(error => {
+        console.error('Error buscando lugares:', error);
+      });
+  }
+
+  function initMap() {
+    // Inicializar el mapa centrado en Querétaro
+    map = L.map('map').setView([20.5888, -100.3899], 12);
+
+    // Agregar capa de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Agregar listeners para autocompletado con debounce
+    document.getElementById('origin-input').addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      // Limpiar las coordenadas guardadas cuando el usuario edita manualmente
+      delete e.target.dataset.lat;
+      delete e.target.dataset.lon;
+      searchTimeout = setTimeout(() => {
+        searchPlaces(e.target.value, 'origin-suggestions');
+      }, 300);
+    });
+
+    document.getElementById('destination-input').addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      // Limpiar las coordenadas guardadas cuando el usuario edita manualmente
+      delete e.target.dataset.lat;
+      delete e.target.dataset.lon;
+      searchTimeout = setTimeout(() => {
+        searchPlaces(e.target.value, 'destination-suggestions');
+      }, 300);
+    });
+
+    // Cerrar sugerencias al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#origin-input') && !e.target.closest('#origin-suggestions')) {
+        document.getElementById('origin-suggestions').style.display = 'none';
+      }
+      if (!e.target.closest('#destination-input') && !e.target.closest('#destination-suggestions')) {
+        document.getElementById('destination-suggestions').style.display = 'none';
+      }
+    });
+
+    // Obtener ubicación del usuario
+    getUserLocation();
+  }
+
+  function getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          const originInput = document.getElementById('origin-input');
+
+          // Obtener dirección usando Nominatim (geocodificación inversa gratuita)
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLocation.lat}&lon=${userLocation.lng}`)
+            .then(response => response.json())
+            .then(data => {
+              originInput.value = data.display_name;
+              originInput.dataset.lat = userLocation.lat;
+              originInput.dataset.lon = userLocation.lng;
+            })
+            .catch(error => {
+              originInput.value = `${userLocation.lat.toFixed(4)}, ${userLocation.lng.toFixed(4)}`;
+              originInput.dataset.lat = userLocation.lat;
+              originInput.dataset.lon = userLocation.lng;
+            });
+
+          // Centrar mapa en ubicación del usuario
+          map.setView([userLocation.lat, userLocation.lng], 14);
+
+          // Agregar marcador de origen
+          userMarker = L.marker([userLocation.lat, userLocation.lng], {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          }).addTo(map);
+          
+          userMarker.bindPopup('Tu ubicación').openPopup();
+        },
+        (error) => {
+          console.error('Error obteniendo ubicación:', error);
+          document.getElementById('origin-input').value = 'No se pudo detectar tu ubicación';
+          alert('No se pudo obtener tu ubicación. Por favor, permite el acceso a tu ubicación o ingresa una dirección manualmente.');
+        }
+      );
+    } else {
+      document.getElementById('origin-input').value = 'Geolocalización no soportada';
+      alert('Tu navegador no soporta geolocalización');
+    }
+  }
+
+  function calculateRoute() {
+    const originInput = document.getElementById('origin-input');
+    const destinationInput = document.getElementById('destination-input');
+    
+    let origin = userLocation;
+    
+    // Si el usuario modificó el origen, usar esas coordenadas
+    if (originInput.dataset.lat && originInput.dataset.lon) {
+      origin = {
+        lat: parseFloat(originInput.dataset.lat),
+        lng: parseFloat(originInput.dataset.lon)
+      };
+    }
+
+    if (!origin) {
+      alert('Por favor, espera a que se detecte tu ubicación o ingresa una dirección de origen.');
+      return;
+    }
+
+    if (!destinationInput.value) {
+      alert('Por favor ingresa una dirección de destino');
+      return;
+    }
+
+    // Si ya se seleccionó una sugerencia de destino, usar esas coordenadas
+    if (destinationInput.dataset.lat && destinationInput.dataset.lon) {
+      const destination = {
+        lat: parseFloat(destinationInput.dataset.lat),
+        lng: parseFloat(destinationInput.dataset.lon)
+      };
+      createRoute(origin, destination);
+    } else {
+      // Geocodificar destino usando Nominatim si no hay coordenadas guardadas
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinationInput.value)}&countrycodes=mx&limit=1`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            alert('No se encontró la dirección de destino. Intenta con otra dirección.');
+            return;
+          }
+
+          const destination = {
+            lat: parseFloat(data[0].lat),
+            lng: parseFloat(data[0].lon)
+          };
+          createRoute(origin, destination);
+        })
+        .catch(error => {
+          alert('Error al buscar la dirección. Verifica tu conexión.');
+          console.error('Error:', error);
+        });
+    }
+  }
+
+  function createRoute(origin, destination) {
+    // Remover marcador de usuario anterior si existe
+    if (userMarker) {
+      map.removeLayer(userMarker);
+    }
+
+    // Remover ruta anterior si existe
+    if (routingControl) {
+      map.removeControl(routingControl);
+    }
+
+    // Crear nueva ruta
+    routingControl = L.Routing.control({
+      waypoints: [
+        L.latLng(origin.lat, origin.lng),
+        L.latLng(destination.lat, destination.lng)
+      ],
+      routeWhileDragging: false,
+      showAlternatives: false,
+      lineOptions: {
+        styles: [{ color: '#d97706', weight: 6, opacity: 0.8 }]
+      },
+      createMarker: function(i, waypoint, n) {
+        if (i === 0) {
+          // Marcador de origen (naranja)
+          return L.marker(waypoint.latLng, {
+            icon: L.icon({
+              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          });
+        }
+        // Marcador de destino (verde)
+        return L.marker(waypoint.latLng, {
+          icon: L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          })
+        });
+      }
+    }).addTo(map);
+
+    // Escuchar evento de ruta calculada
+    routingControl.on('routesfound', function(e) {
+      const route = e.routes[0];
+      const distance = (route.summary.totalDistance / 1000).toFixed(2);
+      const duration = Math.round(route.summary.totalTime / 60);
+
+      document.getElementById('distance-text').textContent = distance + ' km';
+      document.getElementById('duration-text').textContent = duration + ' min';
+      document.getElementById('route-info').style.display = 'block';
+    });
+  }
+
+  // Event listeners
+  document.getElementById('calculate-route-btn').addEventListener('click', calculateRoute);
+
+  // Listeners para inventario de mudanza
+  document.addEventListener('DOMContentLoaded', function() {
+    const mudanzaItems = document.querySelectorAll('.mudanza-item');
+    const numCajas = document.getElementById('num-cajas');
+    
+    // Configuración para cada tipo de cama
+    const camaConfigs = [
+      { checkbox: 'cama-king-checkbox', options: 'cama-king-options', radios: '.cama-king-radio', name: 'cama-king-cantidad' },
+      { checkbox: 'cama-queen-checkbox', options: 'cama-queen-options', radios: '.cama-queen-radio', name: 'cama-queen-cantidad' },
+      { checkbox: 'cama-matrimonial-checkbox', options: 'cama-matrimonial-options', radios: '.cama-matrimonial-radio', name: 'cama-matrimonial-cantidad' },
+      { checkbox: 'cama-individual-checkbox', options: 'cama-individual-options', radios: '.cama-individual-radio', name: 'cama-individual-cantidad' }
+    ];
+    
+    // Configurar listeners para cada tipo de cama
+    camaConfigs.forEach(config => {
+      const checkbox = document.getElementById(config.checkbox);
+      const options = document.getElementById(config.options);
+      const radios = document.querySelectorAll(config.radios);
+      
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          options.style.display = 'block';
+        } else {
+          options.style.display = 'none';
+          radios.forEach(radio => radio.checked = false);
+        }
+        actualizarInventario();
+      });
+      
+      radios.forEach(radio => {
+        radio.addEventListener('change', actualizarInventario);
+      });
+    });
+    
+    function actualizarInventario() {
+      const itemsSeleccionados = Array.from(document.querySelectorAll('.mudanza-item:checked'))
+        .map(item => item.value);
+      
+      // Agregar camas seleccionadas con sus cantidades
+      camaConfigs.forEach(config => {
+        const checkbox = document.getElementById(config.checkbox);
+        const radioSeleccionado = document.querySelector(`input[name="${config.name}"]:checked`);
+        if (checkbox.checked && radioSeleccionado) {
+          itemsSeleccionados.push(radioSeleccionado.value);
+        }
+      });
+      
+      const numCajasValue = parseInt(numCajas.value) || 0;
+      
+      const resumen = document.getElementById('inventario-resumen');
+      const lista = document.getElementById('inventario-lista');
+      
+      if (itemsSeleccionados.length > 0 || numCajasValue > 0) {
+        let html = '<ul style="margin: 0; padding-left: 20px;">';
+        
+        itemsSeleccionados.forEach(item => {
+          html += `<li>${item}</li>`;
+        });
+        
+        if (numCajasValue > 0) {
+          html += `<li>📦 ${numCajasValue} cajas aproximadamente</li>`;
+        }
+        
+        html += '</ul>';
+        lista.innerHTML = html;
+        resumen.style.display = 'block';
+      } else {
+        resumen.style.display = 'none';
+      }
+    }
+    
+    mudanzaItems.forEach(item => {
+      item.addEventListener('change', actualizarInventario);
+    });
+    
+    numCajas.addEventListener('input', actualizarInventario);
+  });
+
+  // Función para solicitar mudanza vía WhatsApp
+  function solicitarMudanza() {
+    const itemsSeleccionados = Array.from(document.querySelectorAll('.mudanza-item:checked'))
+      .map(item => item.value);
+    
+    // Configuración para cada tipo de cama
+    const camaConfigs = [
+      { checkbox: 'cama-king-checkbox', name: 'cama-king-cantidad' },
+      { checkbox: 'cama-queen-checkbox', name: 'cama-queen-cantidad' },
+      { checkbox: 'cama-matrimonial-checkbox', name: 'cama-matrimonial-cantidad' },
+      { checkbox: 'cama-individual-checkbox', name: 'cama-individual-cantidad' }
+    ];
+    
+    // Agregar camas seleccionadas con sus cantidades
+    camaConfigs.forEach(config => {
+      const checkbox = document.getElementById(config.checkbox);
+      const radioSeleccionado = document.querySelector(`input[name="${config.name}"]:checked`);
+      if (checkbox.checked && radioSeleccionado) {
+        itemsSeleccionados.push(radioSeleccionado.value);
+      }
+    });
+    
+    const numCajasValue = parseInt(document.getElementById('num-cajas').value) || 0;
+    
+    if (itemsSeleccionados.length === 0 && numCajasValue === 0) {
+      alert('Por favor, selecciona al menos un artículo o indica el número de cajas');
+      return;
+    }
+    
+    let inventario = itemsSeleccionados.join('\n• ');
+    if (numCajasValue > 0) {
+      inventario += `\n• 📦 ${numCajasValue} cajas aproximadamente`;
+    }
+    
+    const mensaje = `Hola, necesito solicitar un servicio de mudanza:
+
+📋 *INVENTARIO:*
+• ${inventario}
+
+Por favor, envíenme una cotización.
+
+¡Gracias!`;
+    
+    const whatsappUrl = `https://wa.me/5214424597543?text=${encodeURIComponent(mensaje)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+
+  // Inicializar mapa cuando cargue la página
+  window.addEventListener('load', initMap);
+</script>
+
+    </div> <!-- Cierra col-lg-12 -->
+  </div> <!-- Cierra row interna -->
+  </div> <!-- Cierra col-lg-10 -->
+  </div> <!-- Cierra row principal -->
+</div> <!-- Cierra container-fluid -->
+
+<!-- Nuestras Unidades -->
+<div class="container mt-5 mb-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-lg border-0" style="background: white; border-radius: 15px; padding: 40px; text-align: center;">
+        <h2 class="fw-700 mb-3" style="color: #0b2f44; font-size: 2rem;">🚚 Nuestras Unidades</h2>
+        <p class="mb-4" style="color: #666; font-size: 1.1rem;">Contamos con vehículos amplios y en excelente estado para garantizar la seguridad de tus pertenencias</p>
+        <a href="{{ url_for('unidades') }}" class="btn btn-lg fw-600 px-5 py-3" style="background: var(--accent-2); color: white; border-radius: 10px; font-size: 1.1rem;">
+          Ver Nuestras Unidades →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para imagen ampliada -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="border: none; padding: 10px;">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <img id="modalImage" src="" class="img-fluid" style="width: 100%; border-radius: 0 0 8px 8px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Función para alternar galería
+  function toggleGallery() {
+    const content = document.getElementById('galleryContent');
+    const icon = document.getElementById('toggleIcon');
+    if (content.style.display === 'none' || content.style.display === '') {
+      content.style.display = 'block';
+      icon.textContent = '▲';
+    } else {
+      content.style.display = 'none';
+      icon.textContent = '▼';
+    }
+  }
+
+  // Función para mostrar imagen en modal
+  function showImage(src) {
+    document.getElementById('modalImage').src = src;
+  }
+</script>
+
+{% endblock %}

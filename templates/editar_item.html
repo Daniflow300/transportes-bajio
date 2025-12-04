@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}Editar Item{% endblock %}
+{% block content %}
+<div class="card mx-auto mt-5" style="max-width: 480px;">
+  <div class="card-body p-5">
+    <h3 class="mb-4 text-center fw-600" style="color: var(--accent-2);">Editar Artículo</h3>
+    <form method="POST" enctype="multipart/form-data">
+      {% if item.imagen %}
+      <div class="text-center mb-3">
+        <img src="{{ url_for('static', filename='uploads/' ~ item.imagen) }}" alt="{{ item.nombre_item }}" style="width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid rgba(15,23,36,0.04);">
+      </div>
+      {% endif %}
+      {% if item.imagenes %}
+      <div class="mb-3">
+        <label class="form-label">Imágenes actuales</label>
+        <div id="current-images" class="d-flex flex-wrap gap-2">
+          {% for img in item.imagenes %}
+          <div class="text-center" style="width:110px;" data-img-id="{{ img.id }}">
+            <img src="{{ url_for('static', filename='uploads/' ~ img.filename) }}" alt="img" style="width:100px;height:70px;object-fit:cover;border-radius:6px;border:1px solid rgba(15,23,36,0.04);">
+            <div class="form-check mt-1">
+              <input class="form-check-input" type="checkbox" name="delete_imagenes" value="{{ img.id }}" id="delimg{{ img.id }}">
+              <label class="form-check-label small" for="delimg{{ img.id }}">Eliminar</label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label">Nombre del artículo</label>
+        <input name="nombre_item" class="form-control" value="{{ item.nombre_item }}" required>
+      </div>
+      
+      <div class="mb-4">
+        <label class="form-label">Cantidad</label>
+        <input name="cantidad" type="number" class="form-control" value="{{ item.cantidad }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Agregar imágenes</label>
+        <div id="dropzone-edit" class="p-3 border rounded" style="background:var(--surface);">
+          <div class="text-center" style="color:var(--muted);">Arrastra imágenes aquí o haz clic para seleccionar</div>
+          <input type="file" name="imagenes" id="input-edit-files" class="form-control mt-2" accept="image/*" multiple style="min-height:0;padding:6px;"/>
+          <div id="edit-previews" class="d-flex flex-wrap gap-2 mt-2"></div>
+          <div class="mt-2 d-flex gap-2">
+            <button type="button" id="btn-upload-now" class="btn btn-sm btn-primary">Subir ahora</button>
+            <div id="upload-status" class="text-muted small align-self-center"></div>
+          </div>
+        </div>
+        <small style="color: var(--muted);">PNG, JPG o GIF. Máx. 5MB por archivo.</small>
+      </div>
+      
+      <div class="d-grid gap-2 d-sm-flex justify-content-between">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Volver</a>
+        <button class="btn btn-primary fw-600 px-4">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+;(function(){
+  const dz = document.getElementById('dropzone-edit');
+  const input = document.getElementById('input-edit-files');
+  const previews = document.getElementById('edit-previews');
+  const btn = document.getElementById('btn-upload-now');
+  const status = document.getElementById('upload-status');
+  const current = document.getElementById('current-images');
+  const inventarioId = {{ item.id }};
+
+  if(!dz || !input) return;
+  dz.addEventListener('click', ()=> input.click());
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.add('border-primary'); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.remove('border-primary'); }));
+
+  dz.addEventListener('drop', (e)=>{
+    const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+    if(files.length) {
+      const dt = new DataTransfer();
+      files.forEach(f=> dt.items.add(f));
+      const currentFiles = Array.from(input.files || []);
+      currentFiles.concat(files).forEach(f=> dt.items.add(f));
+      input.files = dt.files;
+      renderPreviews(input.files);
+    }
+  });
+  input.addEventListener('change', ()=> renderPreviews(input.files));
+
+  function renderPreviews(files){
+    previews.innerHTML='';
+    Array.from(files || []).slice(0,12).forEach(f=>{
+      const url = URL.createObjectURL(f);
+      const img = document.createElement('img');
+      img.src = url; img.style.width='80px'; img.style.height='60px'; img.style.objectFit='cover'; img.style.borderRadius='6px'; img.style.border='1px solid rgba(0,0,0,0.06)';
+      previews.appendChild(img);
+    });
+  }
+
+  btn && btn.addEventListener('click', async function(){
+    const files = Array.from(input.files || []);
+    if(!files.length){ status.textContent = 'No hay archivos seleccionados.'; return; }
+    status.textContent = 'Subiendo...';
+    for(const f of files){
+      const fd = new FormData(); fd.append('file', f); fd.append('inventario_id', inventarioId);
+      try{
+        const resp = await fetch('/upload_image', { method:'POST', body: fd });
+        const data = await resp.json();
+        if(data && data.ok){
+          // append thumbnail to current images
+          const wrapper = document.createElement('div'); wrapper.className='text-center'; wrapper.style.width='110px';
+          const img = document.createElement('img'); img.src = data.url; img.style.width='100px'; img.style.height='70px'; img.style.objectFit='cover'; img.style.borderRadius='6px'; img.style.border='1px solid rgba(15,23,36,0.04)';
+          wrapper.appendChild(img);
+          current.appendChild(wrapper);
+        } else {
+          console.error('Upload error', data);
+        }
+      } catch(err){ console.error(err); }
+    }
+    status.textContent = 'Subida completa.';
+    // clear input and previews
+    input.value = null; previews.innerHTML='';
+  });
+})();
+</script>
+{% endblock %}

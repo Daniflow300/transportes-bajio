@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Mi Información{% endblock %}
+{% block content %}
+<div class="card mx-auto mt-5" style="max-width: 600px;">
+  <div class="card-body p-5">
+    <h3 class="mb-4 text-center fw-600" style="color: var(--accent-2);">Mi Información</h3>
+    
+    <div class="text-center mb-4">
+      {% if usuario.foto %}
+        <img src="{{ url_for('static', filename='uploads/' ~ usuario.foto) }}"
+             class="rounded-circle" width="120" height="120" style="object-fit: cover; border: 2px solid var(--accent-2);">
+      {% else %}
+        <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; border: 2px solid rgba(107,114,128,0.2);">
+          <span class="text-white fw-600">Sin foto</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input name="nombre" class="form-control" value="{{ usuario.nombre }}" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Domicilio</label>
+        <input name="domicilio" class="form-control" value="{{ usuario.domicilio }}" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input name="telefono" id="telefono" class="form-control" placeholder="Teléfono" value="{{ usuario.telefono }}" required>
+        <small id="telError" class="text-danger d-block mt-1"></small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input name="email" type="email" class="form-control" value="{{ usuario.email }}" required>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Foto de perfil</label>
+        <input type="file" name="foto" class="form-control" accept="image/*">
+        <small style="color: var(--muted);">PNG, JPG o GIF. Máx. 5MB.</small>
+      </div>
+
+      <div class="d-grid gap-2 d-sm-flex justify-content-between">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Volver</a>
+        <button type="submit" class="btn btn-primary fw-600 px-4">Guardar cambios</button>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{{ url_for('cambiar_password') }}" class="btn btn-outline-warning btn-sm" style="border-color: var(--accent-2); color: var(--accent-2);">Cambiar contraseña</a>
+      </div>
+      
+      {# Reenviar correo de activación si no está activada la cuenta #}
+      <div class="text-center mt-3">
+        {% if usuario.activo is defined and usuario.activo == 0 %}
+        <form method="POST" action="{{ url_for('reenviar_activacion') }}" style="display:inline;">
+          <button type="submit" class="btn btn-info btn-sm" style="background-color: #17a2b8;">Reenviar correo de activación</button>
+        </form>
+        {% else %}
+        <span class="badge bg-success">Cuenta activada</span>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

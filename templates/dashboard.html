@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block title %}Mi Inventario{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-5">
+  <h2 class="mb-0">Mi Inventario</h2>
+  <button class="btn btn-success fw-600" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" class="me-2" aria-hidden="true">
+      <path d="M8 4a.5.5 0 0 1 .5.5V7.5H11.5a.5.5 0 0 1 0 1H8.5V11.5a.5.5 0 0 1-1 0V8.5H4.5a.5.5 0 0 1 0-1H7.5V4.5A.5.5 0 0 1 8 4z"/>
+    </svg>
+    Agregar Artículo
+  </button>
+</div>
+
+<!-- Tabla inventario -->
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Artículo</th>
+            <th>Cantidad</th>
+            <th>Categoría</th>
+            <th style="text-align: right;">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                {% if item.imagen %}
+                  <img src="{{ url_for('static', filename='uploads/' ~ item.imagen) }}" alt="{{ item.nombre_item }}" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid rgba(15,23,36,0.06);">
+                {% endif %}
+                <div>
+                  <strong>{{ item.nombre_item }}</strong>
+                </div>
+              </div>
+            </td>
+            <td>{{ item.cantidad }}</td>
+            <td><span style="color: var(--muted);">{{ item.categoria if item.get('categoria') else '—' }}</span></td>
+            <td style="text-align: right;">
+              <div class="d-flex align-items-center justify-content-end gap-2">
+                <a href="{{ url_for('editar_item', id=item.id) }}" class="btn btn-outline-primary btn-sm action-btn" title="Editar artículo" data-bs-toggle="tooltip" aria-label="Editar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-9.193 9.193a.5.5 0 0 1-.168.11l-4 1.6a.5.5 0 0 1-.65-.65l1.6-4a.5.5 0 0 1 .11-.168l9.193-9.193zM11.207 2L3 10.207V13h2.793L14 4.793 11.207 2z"/>
+                  </svg>
+                  <span class="d-none d-sm-inline">Editar</span>
+                </a>
+
+                <form action="{{ url_for('eliminar_item', id=item.id) }}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm action-btn" title="Eliminar artículo" data-bs-toggle="tooltip" aria-label="Eliminar" onclick="return confirm('¿Eliminar este artículo?');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 5h4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5v-7zM14.5 3a1 1 0 0 1-1 1H13v9.5A1.5 1.5 0 0 1 11.5 15h-7A1.5 1.5 0 0 1 3 13.5V4H2.5a1 1 0 0 1 0-2h3.11a1 1 0 0 1 .9-.553l.39-.001h3.998l.39.001a1 1 0 0 1 .9.553H14.5a1 1 0 0 1 1 1zM6.5 1a1 1 0 0 0-1 .999V2h5v-.001A1 1 0 0 0 10.5 1h-4z"/>
+                    </svg>
+                    <span class="d-none d-sm-inline">Eliminar</span>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    {% if not items %}
+    <div class="text-center py-5" style="color: var(--muted);">
+      <p class="mb-3">No tienes artículos aún</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregar">Agregar el primero</button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- MODAL AGREGAR -->
+<div class="modal fade" id="modalAgregar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/agregar_item" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title fw-600" style="color: var(--accent-2);">Agregar Artículo</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nombre del artículo</label>
+            <input name="nombre_item" class="form-control" placeholder="Ej: Sofá" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input name="cantidad" class="form-control" placeholder="Ej: 2" required type="number">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Categoría (opcional)</label>
+            <input name="categoria" class="form-control" placeholder="Ej: Sala, Cocina, Dormitorio">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Imágenes (opcional)</label>
+            <div id="dropzone-add" class="p-3 border rounded" style="background:var(--surface);">
+              <div class="text-center" style="color:var(--muted);">Arrastra imágenes aquí o haz clic para seleccionar</div>
+              <input type="file" name="imagenes" id="input-add-files" class="form-control mt-2" accept="image/*" multiple style="min-height:0;padding:6px;"/>
+              <div id="add-previews" class="d-flex flex-wrap gap-2 mt-2"></div>
+            </div>
+            <small style="color: var(--muted);">PNG, JPG o GIF. Máx. 5MB por archivo.</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-success fw-600">Guardar Artículo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+    {% block scripts %}
+    <script>
+    // Drag & drop + preview for add modal
+    ;(function(){
+      const dz = document.getElementById('dropzone-add');
+      const input = document.getElementById('input-add-files');
+      const previews = document.getElementById('add-previews');
+
+      if(!dz || !input) return;
+
+      dz.addEventListener('click', ()=> input.click());
+
+      ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.add('border-primary'); }));
+      ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, (e)=>{ e.preventDefault(); dz.classList.remove('border-primary'); }));
+
+      dz.addEventListener('drop', (e)=>{
+        const files = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+        if(files.length) {
+          const dt = new DataTransfer();
+          files.forEach(f=> dt.items.add(f));
+          // merge with existing
+          const current = Array.from(input.files || []);
+          current.concat(files).forEach(f=> dt.items.add(f));
+          input.files = dt.files;
+          renderPreviews(input.files, previews);
+        }
+      });
+
+      input.addEventListener('change', ()=> renderPreviews(input.files, previews));
+
+      function renderPreviews(files, container){
+        container.innerHTML = '';
+        Array.from(files || []).slice(0,12).forEach(f=>{
+          const url = URL.createObjectURL(f);
+          const img = document.createElement('img');
+          img.src = url; img.style.width='80px'; img.style.height='60px'; img.style.objectFit='cover'; img.style.borderRadius='6px'; img.style.border='1px solid rgba(0,0,0,0.06)';
+          container.appendChild(img);
+        });
+      }
+    })();
+    </script>
+    {% endblock %}
+

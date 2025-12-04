@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Registro{% endblock %}
+{% block content %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const telInput = document.getElementById('telefono');
+  const telError = document.getElementById('telError');
+  const passwordInput = document.getElementById('password');
+  const passwordError = document.getElementById('passwordError');
+  const confirmPasswordInput = document.getElementById('confirm_password');
+  const confirmPasswordError = document.getElementById('confirmPasswordError');
+  const form = document.querySelector('form');
+
+  // Validación de teléfono
+  if (telInput) {
+    telInput.addEventListener('input', () => {
+      const value = telInput.value;
+
+      // Solo permitir números y "+"
+      telInput.value = value.replace(/[^\d\+]/g, '');
+
+      // Validación
+      const regex = /^\+?\d{7,15}$/;
+
+      if (!regex.test(telInput.value)) {
+        telError.textContent = "Formato inválido. Ejemplo: +528112345678";
+        telInput.classList.add("is-invalid");
+      } else {
+        telError.textContent = "";
+        telInput.classList.remove("is-invalid");
+      }
+    });
+  }
+
+  // Validación de contraseña
+  if (passwordInput) {
+    passwordInput.addEventListener('input', () => {
+      const value = passwordInput.value;
+      const errors = [];
+
+      if (value.length < 8) {
+        errors.push("Mínimo 8 caracteres");
+      }
+      if (!/[a-z]/.test(value)) {
+        errors.push("una minúscula");
+      }
+      if (!/[A-Z]/.test(value)) {
+        errors.push("una mayúscula");
+      }
+      if (!/[0-9]/.test(value)) {
+        errors.push("un número");
+      }
+
+      if (errors.length > 0) {
+        passwordError.textContent = "Debe contener: " + errors.join(", ");
+        passwordInput.classList.add("is-invalid");
+      } else {
+        passwordError.textContent = "";
+        passwordInput.classList.remove("is-invalid");
+      }
+    });
+  }
+
+  // Validación de confirmar contraseña
+  if (confirmPasswordInput) {
+    confirmPasswordInput.addEventListener('input', () => {
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        confirmPasswordError.textContent = "Las contraseñas no coinciden";
+        confirmPasswordInput.classList.add("is-invalid");
+      } else {
+        confirmPasswordError.textContent = "";
+        confirmPasswordInput.classList.remove("is-invalid");
+      }
+    });
+    
+    // También validar cuando cambie la contraseña principal
+    passwordInput.addEventListener('input', () => {
+      if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+        confirmPasswordError.textContent = "Las contraseñas no coinciden";
+        confirmPasswordInput.classList.add("is-invalid");
+      } else if (confirmPasswordInput.value) {
+        confirmPasswordError.textContent = "";
+        confirmPasswordInput.classList.remove("is-invalid");
+      }
+    });
+  }
+
+  // Validación al enviar el formulario
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      
+      if (password.length < 8 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+        e.preventDefault();
+        passwordError.textContent = "La contraseña no cumple con los requisitos";
+        passwordInput.classList.add("is-invalid");
+        passwordInput.focus();
+        return false;
+      }
+      
+      if (password !== confirmPassword) {
+        e.preventDefault();
+        confirmPasswordError.textContent = "Las contraseñas no coinciden";
+        confirmPasswordInput.classList.add("is-invalid");
+        confirmPasswordInput.focus();
+        return false;
+      }
+    });
+  }
+});
+</script>
+
+<div class="card mx-auto mt-5" style="max-width: 480px;">
+  <div class="card-body p-5">
+    <h3 class="mb-4 text-center fw-600" style="color: var(--accent-2);">Crear Cuenta</h3>
+    <form method="POST">
+      <div class="mb-3">
+        <label class="form-label">Nombre completo</label>
+        <input name="nombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Domicilio</label>
+        <input name="domicilio" class="form-control" placeholder="Ej: Calle Principal 123" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input name="telefono" id="telefono" class="form-control" placeholder="Ej: +528112345678" required>
+        <small id="telError" class="text-danger d-block mt-1"></small>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input name="email" type="email" class="form-control" placeholder="Ej: usuario@correo.com" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input name="password" id="password" type="password" class="form-control" placeholder="Ingrese una contraseña" required>
+        <small class="text-muted d-block mt-1">Debe contener mínimo una mayúscula, una minúscula y un número (8 caracteres como mínimo).</small>
+        <small id="passwordError" class="text-danger d-block mt-1"></small>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Confirmar contraseña</label>
+        <input name="confirm_password" id="confirm_password" type="password" class="form-control" placeholder="Vuelve a ingresar tu contraseña" required>
+        <small id="confirmPasswordError" class="text-danger d-block mt-1"></small>
+      </div>
+      <button class="btn btn-success w-100 fw-600 py-2">Registrarse</button>
+    </form>
+    <p class="text-center mt-3 mb-0" style="color: var(--muted);">¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="fw-600">Inicia sesión</a></p>
+  </div>
+</div>
+{% endblock %}
+
