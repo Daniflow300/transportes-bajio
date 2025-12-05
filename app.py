@@ -106,6 +106,10 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '159357'
 app.config['MYSQL_DB'] = 'fletes_mudanzas'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+# Configuración de pool de conexiones para evitar sobrecarga
+app.config['MYSQL_CONNECT_TIMEOUT'] = 10
+app.config['MYSQL_POOL_SIZE'] = 5
+app.config['MYSQL_POOL_RECYCLE'] = 3600
 
 mysql = MySQL(app)
 
@@ -294,17 +298,22 @@ def login():
         email = request.form['email']
         password = request.form['password']
         
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM usuarios WHERE email = %s', [email])
-        user = cur.fetchone()
-        cur.close()
-        
-        if user and check_password_hash(user['password'], password):
-            session['nombre'] = user['nombre']
-            session['email'] = user['email']
-            return redirect(url_for('index'))
-        else:
-            flash('Credenciales inválidas.', 'danger')
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute('SELECT * FROM usuarios WHERE email = %s', [email])
+            user = cur.fetchone()
+            cur.close()
+            
+            if user and check_password_hash(user['password'], password):
+                session['nombre'] = user['nombre']
+                session['email'] = user['email']
+                return redirect(url_for('index'))
+            else:
+                flash('Credenciales inválidas.', 'danger')
+        except Exception as e:
+            flash(f'Error de conexión al servidor. Por favor, intenta de nuevo en unos momentos.', 'danger')
+            print(f"Error de MySQL: {str(e)}")  # Para debug en consola
+            
     return render_template('login.html')
 
 
