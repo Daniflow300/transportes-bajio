@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
-import pymysql
-pymysql.install_as_MySQLdb()
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -12,14 +10,6 @@ import re
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_super_segura'
-
-# Deshabilitar caché en desarrollo
-@app.after_request
-def add_header(response):
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '-1'
-    return response
 
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
@@ -769,11 +759,6 @@ def ayuda():
     return render_template('ayuda.html')
 
 
-@app.route('/aviso-privacidad')
-def aviso_privacidad():
-    return render_template('aviso_privacidad.html')
-
-
 @app.route('/fletes')
 def fletes():
     return render_template('fletes.html')
@@ -830,6 +815,6 @@ def upload_image():
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port)
 
 
