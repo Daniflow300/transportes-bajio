@@ -1,0 +1,44 @@
+# flyctl launch added from .gitignore
+# Python
+**\__pycache__
+**\*.py[cod]
+**\*$py.class
+**\*.so
+**\.Python
+**\venv
+**\env
+**\ENV
+
+# Flask
+**\instance
+**\.webassets-cache
+
+# Database
+**\*.db
+**\*.sqlite
+
+# IDEs
+**\.vscode
+**\.idea
+**\*.swp
+**\*.swo
+
+# Uploads
+**\static\uploads\*
+!**\static\uploads\.gitkeep
+
+# Environment variables
+**\.env
+**\.env.local
+
+# Logs
+**\*.log
+
+# OS
+**\.DS_Store
+**\Thumbs.db
+
+# flyctl launch added from venv\.gitignore
+# Created by venv; see https://docs.python.org/3/library/venv.html
+venv\**\*
+fly.toml

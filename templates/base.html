@@ -57,6 +57,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="ayudaDropdown">
               <li><a class="dropdown-item" href="{{ url_for('ayuda') }}" style="color: var(--accent-2);">Preguntas Frecuentes</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('aviso_privacidad') }}" style="color: var(--accent-2);">Aviso de Privacidad</a></li>
             </ul>
           </li>
         </ul>
@@ -169,7 +170,11 @@
             'fletes': '{{ url_for("fletes") }}',
             'flete': '{{ url_for("fletes") }}',
             'mudanzas': '{{ url_for("mudanzas") }}',
-            'mudanza': '{{ url_for("mudanzas") }}'
+            'mudanza': '{{ url_for("mudanzas") }}',
+            'ayuda': '{{ url_for("ayuda") }}',
+            'pedido': '{{ url_for("ayuda") }}',
+            'preguntas': '{{ url_for("ayuda") }}',
+            'frecuentes': '{{ url_for("ayuda") }}'
           };
 
           // Buscar coincidencia
